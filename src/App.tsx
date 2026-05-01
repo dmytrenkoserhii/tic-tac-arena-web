@@ -69,7 +69,7 @@ function StatusShell({
 }
 
 function App() {
-  const { isLoading, user } = useAuth()
+  const { isLoading, profile, profileError, user } = useAuth()
   const [authError, setAuthError] = useState<string | null>(null)
   const [isAuthActionLoading, setIsAuthActionLoading] = useState(false)
 
@@ -136,19 +136,28 @@ function App() {
   }
 
   return (
-    <StatusShell
-      eyebrow="Tic Tac Arena"
-      lead="Your session is active. The lobby is the next stop."
-      title="Welcome back"
-    >
+      <StatusShell
+        eyebrow="Tic Tac Arena"
+        lead="Your session is active. The lobby is the next stop."
+        title={`Welcome back${profile?.display_name ? `, ${profile.display_name}` : ''}`}
+      >
       <Stack gap="lg">
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
           <StatusItem
             label="Signed in as"
-            value={user.email ?? 'Authenticated player'}
+            value={profile?.email ?? user.email ?? 'Authenticated player'}
           />
-          <StatusItem label="Player id" value={user.id} />
+          <StatusItem
+            label="Profile"
+            value={profile ? 'Synced from Supabase' : 'Waiting for profile row'}
+          />
         </SimpleGrid>
+
+        {profileError ? (
+          <Alert color="yellow" radius="md" title="Profile not loaded yet">
+            {profileError}
+          </Alert>
+        ) : null}
 
         {authError ? (
           <Alert color="red" radius="md" title="Sign-out failed">
