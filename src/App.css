@@ -46,6 +46,10 @@
   overflow-wrap: anywhere;
 }
 
+.primary-action {
+  min-width: 220px;
+}
+
 @media (max-width: 760px) {
   .status-title {
     max-width: 100%;

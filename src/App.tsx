@@ -1,15 +1,19 @@
 import {
+  Alert,
   Badge,
   Box,
+  Button,
   Container,
+  Group,
   Paper,
   SimpleGrid,
   Stack,
   Text,
   Title,
 } from '@mantine/core'
+import { useState, type ReactNode } from 'react'
 
-import { env } from './lib/env'
+import { signInWithGoogle, signOut } from './features/auth/auth-actions'
 import { useAuth } from './features/auth/use-auth'
 import './App.css'
 
@@ -35,7 +39,7 @@ function StatusShell({
   lead,
   title,
 }: {
-  children?: React.ReactNode
+  children?: ReactNode
   eyebrow: string
   lead: string
   title: string
@@ -66,6 +70,33 @@ function StatusShell({
 
 function App() {
   const { isLoading, user } = useAuth()
+  const [authError, setAuthError] = useState<string | null>(null)
+  const [isAuthActionLoading, setIsAuthActionLoading] = useState(false)
+
+  async function handleGoogleSignIn() {
+    setAuthError(null)
+    setIsAuthActionLoading(true)
+
+    const { error } = await signInWithGoogle()
+
+    if (error) {
+      setAuthError(error.message)
+      setIsAuthActionLoading(false)
+    }
+  }
+
+  async function handleSignOut() {
+    setAuthError(null)
+    setIsAuthActionLoading(true)
+
+    const { error } = await signOut()
+
+    if (error) {
+      setAuthError(error.message)
+    }
+
+    setIsAuthActionLoading(false)
+  }
 
   if (isLoading) {
     return (
@@ -81,17 +112,25 @@ function App() {
     return (
       <StatusShell
         eyebrow="Tic Tac Arena"
-        lead="Supabase is connected and the app is correctly detecting the signed out state. The next step is wiring Google sign-in."
-        title="Auth foundation is ready"
+        lead="Sign in to create a room, invite a friend, and play the first match."
+        title="Enter the arena"
       >
-        <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
-          <StatusItem label="Connection target" value={env.supabaseUrl} />
-          <StatusItem label="Session state" value="Signed out" />
-          <StatusItem
-            label="Next step"
-            value="Google sign-in with Supabase Auth"
-          />
-        </SimpleGrid>
+        <Stack gap="md" align="flex-start">
+          {authError ? (
+            <Alert color="red" radius="md" title="Sign-in failed">
+              {authError}
+            </Alert>
+          ) : null}
+
+          <Button
+            className="primary-action"
+            loading={isAuthActionLoading}
+            onClick={handleGoogleSignIn}
+            size="lg"
+          >
+            Continue with Google
+          </Button>
+        </Stack>
       </StatusShell>
     )
   }
@@ -99,20 +138,35 @@ function App() {
   return (
     <StatusShell
       eyebrow="Tic Tac Arena"
-      lead="The app has a valid authenticated session in this browser and is ready for protected screens."
-      title="Session restored"
+      lead="Your session is active. The lobby is the next stop."
+      title="Welcome back"
     >
-      <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
-        <StatusItem
-          label="Signed in as"
-          value={user.email ?? 'Authenticated player'}
-        />
-        <StatusItem label="User id" value={user.id} />
-        <StatusItem
-          label="Next step"
-          value="Google sign-in screen and protected lobby flow"
-        />
-      </SimpleGrid>
+      <Stack gap="lg">
+        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+          <StatusItem
+            label="Signed in as"
+            value={user.email ?? 'Authenticated player'}
+          />
+          <StatusItem label="Player id" value={user.id} />
+        </SimpleGrid>
+
+        {authError ? (
+          <Alert color="red" radius="md" title="Sign-out failed">
+            {authError}
+          </Alert>
+        ) : null}
+
+        <Group>
+          <Button
+            className="primary-action"
+            loading={isAuthActionLoading}
+            onClick={handleSignOut}
+            variant="light"
+          >
+            Sign out
+          </Button>
+        </Group>
+      </Stack>
     </StatusShell>
   )
 }
