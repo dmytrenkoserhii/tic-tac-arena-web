@@ -1,6 +1,4 @@
-const requiredEnvVars = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'] as const
-
-type RequiredEnvVar = (typeof requiredEnvVars)[number]
+type RequiredEnvVar = 'VITE_SUPABASE_URL' | 'VITE_SUPABASE_ANON_KEY'
 
 function readEnvVar(name: RequiredEnvVar): string {
   const value = import.meta.env[name]

@@ -1,15 +1,7 @@
 :root {
-  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: #f8fafc;
   background:
     radial-gradient(circle at top, rgba(14, 165, 233, 0.2), transparent 38%),
     linear-gradient(180deg, #08111f 0%, #101827 55%, #172033 100%);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
@@ -20,6 +12,9 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(14, 165, 233, 0.2), transparent 38%),
+    linear-gradient(180deg, #08111f 0%, #101827 55%, #172033 100%);
 }
 
 #root {
