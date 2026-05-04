@@ -34,6 +34,20 @@
   background: rgba(255, 255, 255, 0.04);
 }
 
+.room-card {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.room-code {
+  width: fit-content;
+  padding: 8px 12px;
+  color: #f8fafc;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  background: rgba(6, 182, 212, 0.16);
+}
+
 .status-label {
   color: rgba(148, 163, 184, 0.95);
   font-weight: 600;

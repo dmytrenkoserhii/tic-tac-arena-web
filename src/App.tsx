@@ -3,6 +3,7 @@ import {
   Badge,
   Box,
   Button,
+  Code,
   Container,
   Group,
   Paper,
@@ -11,10 +12,12 @@ import {
   Text,
   Title,
 } from '@mantine/core'
+import { useClipboard } from '@mantine/hooks'
 import { useState, type ReactNode } from 'react'
 
 import { signInWithGoogle, signOut } from './features/auth/auth-actions'
 import { useAuth } from './features/auth/use-auth'
+import { createRoom, type Room } from './features/rooms/room-api'
 import './App.css'
 
 type StatusItemProps = {
@@ -72,6 +75,14 @@ function App() {
   const { isLoading, profile, profileError, user } = useAuth()
   const [authError, setAuthError] = useState<string | null>(null)
   const [isAuthActionLoading, setIsAuthActionLoading] = useState(false)
+  const [createdRoom, setCreatedRoom] = useState<Room | null>(null)
+  const [roomError, setRoomError] = useState<string | null>(null)
+  const [isRoomActionLoading, setIsRoomActionLoading] = useState(false)
+  const clipboard = useClipboard({ timeout: 1600 })
+
+  const inviteLink = createdRoom
+    ? `${window.location.origin}?room=${createdRoom.code}`
+    : null
 
   async function handleGoogleSignIn() {
     setAuthError(null)
@@ -96,6 +107,26 @@ function App() {
     }
 
     setIsAuthActionLoading(false)
+  }
+
+  async function handleCreateRoom() {
+    if (!profile) {
+      setRoomError('Profile is not ready yet. Refresh the page and try again.')
+      return
+    }
+
+    setRoomError(null)
+    setIsRoomActionLoading(true)
+
+    const { data, error } = await createRoom({ hostId: profile.id })
+
+    if (error) {
+      setRoomError(error.message)
+    } else {
+      setCreatedRoom(data)
+    }
+
+    setIsRoomActionLoading(false)
   }
 
   if (isLoading) {
@@ -136,11 +167,11 @@ function App() {
   }
 
   return (
-      <StatusShell
-        eyebrow="Tic Tac Arena"
-        lead="Your session is active. The lobby is the next stop."
-        title={`Welcome back${profile?.display_name ? `, ${profile.display_name}` : ''}`}
-      >
+    <StatusShell
+      eyebrow="Tic Tac Arena"
+      lead="Create a private room and send the invite code to your opponent."
+      title={`Welcome back${profile?.display_name ? `, ${profile.display_name}` : ''}`}
+    >
       <Stack gap="lg">
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
           <StatusItem
@@ -165,7 +196,51 @@ function App() {
           </Alert>
         ) : null}
 
+        {roomError ? (
+          <Alert color="red" radius="md" title="Room action failed">
+            {roomError}
+          </Alert>
+        ) : null}
+
+        {createdRoom ? (
+          <Paper className="room-card" p="md" radius="md">
+            <Stack gap="sm">
+              <Text className="status-label" size="xs" tt="uppercase">
+                Room code
+              </Text>
+              <Code className="room-code">{createdRoom.code}</Code>
+              {inviteLink ? (
+                <Text className="status-value">{inviteLink}</Text>
+              ) : null}
+              <Group>
+                <Button
+                  onClick={() => clipboard.copy(createdRoom.code)}
+                  variant="light"
+                >
+                  {clipboard.copied ? 'Copied' : 'Copy code'}
+                </Button>
+                {inviteLink ? (
+                  <Button
+                    onClick={() => clipboard.copy(inviteLink)}
+                    variant="subtle"
+                  >
+                    Copy link
+                  </Button>
+                ) : null}
+              </Group>
+            </Stack>
+          </Paper>
+        ) : null}
+
         <Group>
+          <Button
+            className="primary-action"
+            disabled={!profile}
+            loading={isRoomActionLoading}
+            onClick={handleCreateRoom}
+          >
+            Create room
+          </Button>
           <Button
             className="primary-action"
             loading={isAuthActionLoading}
