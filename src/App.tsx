@@ -8,6 +8,7 @@ import {
   joinRoom,
   normalizeRoomCode,
 } from './features/rooms/room-api'
+import { useRoomRealtime } from './features/rooms/use-room-realtime'
 import { SignInScreen } from './components/auth'
 import { StatusShell } from './components/layout'
 import { LobbyScreen } from './components/rooms'
@@ -26,6 +27,11 @@ function App() {
   const inviteLink = activeRoom
     ? `${window.location.origin}?room=${activeRoom.code}`
     : null
+
+  useRoomRealtime({
+    onRoomChange: setActiveRoom,
+    room: activeRoom,
+  })
 
   async function handleGoogleSignIn() {
     setAuthError(null)
