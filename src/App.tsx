@@ -18,7 +18,7 @@ import { useState, type ReactNode } from 'react'
 import { signInWithGoogle, signOut } from './features/auth/auth-actions'
 import { useAuth } from './features/auth/use-auth'
 import { createRoom, type Room } from './features/rooms/room-api'
-import './App.css'
+import classes from './App.module.css'
 
 type StatusItemProps = {
   label: string
@@ -27,11 +27,11 @@ type StatusItemProps = {
 
 function StatusItem({ label, value }: StatusItemProps) {
   return (
-    <Paper className="status-item" p="md" radius="md">
-      <Text className="status-label" size="xs" tt="uppercase">
+    <Paper className={classes.statusItem} p="md" radius="md">
+      <Text className={classes.statusLabel} size="xs" tt="uppercase">
         {label}
       </Text>
-      <Text className="status-value">{value}</Text>
+      <Text className={classes.statusValue}>{value}</Text>
     </Paper>
   )
 }
@@ -48,18 +48,18 @@ function StatusShell({
   title: string
 }) {
   return (
-    <Box component="main" className="app-shell">
+    <Box component="main" className={classes.appShell}>
       <Container size="md">
-        <Paper className="status-card" p="xl" radius="lg">
+        <Paper className={classes.statusCard} p="xl" radius="lg">
           <Stack gap="lg">
             <Stack gap="md">
-              <Badge className="eyebrow" variant="light" size="lg">
+              <Badge className={classes.eyebrow} variant="light" size="lg">
                 {eyebrow}
               </Badge>
-              <Title className="status-title" order={1}>
+              <Title className={classes.statusTitle} order={1}>
                 {title}
               </Title>
-              <Text className="lead" size="lg">
+              <Text className={classes.lead} size="lg">
                 {lead}
               </Text>
             </Stack>
@@ -154,7 +154,7 @@ function App() {
           ) : null}
 
           <Button
-            className="primary-action"
+            className={classes.primaryAction}
             loading={isAuthActionLoading}
             onClick={handleGoogleSignIn}
             size="lg"
@@ -203,14 +203,14 @@ function App() {
         ) : null}
 
         {createdRoom ? (
-          <Paper className="room-card" p="md" radius="md">
+          <Paper className={classes.roomCard} p="md" radius="md">
             <Stack gap="sm">
-              <Text className="status-label" size="xs" tt="uppercase">
+              <Text className={classes.statusLabel} size="xs" tt="uppercase">
                 Room code
               </Text>
-              <Code className="room-code">{createdRoom.code}</Code>
+              <Code className={classes.roomCode}>{createdRoom.code}</Code>
               {inviteLink ? (
-                <Text className="status-value">{inviteLink}</Text>
+                <Text className={classes.statusValue}>{inviteLink}</Text>
               ) : null}
               <Group>
                 <Button
@@ -234,7 +234,7 @@ function App() {
 
         <Group>
           <Button
-            className="primary-action"
+            className={classes.primaryAction}
             disabled={!profile}
             loading={isRoomActionLoading}
             onClick={handleCreateRoom}
@@ -242,7 +242,7 @@ function App() {
             Create room
           </Button>
           <Button
-            className="primary-action"
+            className={classes.primaryAction}
             loading={isAuthActionLoading}
             onClick={handleSignOut}
             variant="light"

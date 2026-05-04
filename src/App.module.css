@@ -1,11 +1,11 @@
-.app-shell {
+.appShell {
   display: grid;
   place-items: center;
   min-height: 100svh;
   padding: 24px;
 }
 
-.status-card {
+.statusCard {
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03)),
@@ -18,7 +18,7 @@
   letter-spacing: 0.12em;
 }
 
-.status-title {
+.statusTitle {
   max-width: 11ch;
   font-size: 4rem;
   line-height: 0.98;
@@ -30,15 +30,15 @@
   line-height: 1.65;
 }
 
-.status-item {
+.statusItem {
   background: rgba(255, 255, 255, 0.04);
 }
 
-.room-card {
+.roomCard {
   background: rgba(255, 255, 255, 0.05);
 }
 
-.room-code {
+.roomCode {
   width: fit-content;
   padding: 8px 12px;
   color: #f8fafc;
@@ -48,24 +48,24 @@
   background: rgba(6, 182, 212, 0.16);
 }
 
-.status-label {
+.statusLabel {
   color: rgba(148, 163, 184, 0.95);
   font-weight: 600;
   letter-spacing: 0.06em;
 }
 
-.status-value {
+.statusValue {
   color: #f8fafc;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
 
-.primary-action {
+.primaryAction {
   min-width: 220px;
 }
 
 @media (max-width: 760px) {
-  .status-title {
+  .statusTitle {
     max-width: 100%;
     font-size: 2.5rem;
   }
