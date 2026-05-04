@@ -1,7 +1,7 @@
 import { createContext } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 
-import type { Profile } from '../profile/profile-api'
+import type { Profile } from '../../types/profile'
 
 export type AuthContextValue = {
   isLoading: boolean

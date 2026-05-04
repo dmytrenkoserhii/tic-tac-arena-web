@@ -2,8 +2,9 @@ import { type PropsWithChildren, useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 
 import { AuthContext } from './auth-context'
-import { syncProfile, type Profile } from '../profile/profile-api'
+import { syncProfile } from '../profile/profile-api'
 import { supabase } from '../../lib/supabase'
+import type { Profile } from '../../types/profile'
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null)

@@ -1,13 +1,7 @@
 import type { User } from '@supabase/supabase-js'
 
 import { supabase } from '../../lib/supabase'
-
-export type Profile = {
-  avatar_url: string | null
-  display_name: string | null
-  email: string | null
-  id: string
-}
+import type { Profile } from '../../types/profile'
 
 export async function getProfile(userId: string) {
   return supabase

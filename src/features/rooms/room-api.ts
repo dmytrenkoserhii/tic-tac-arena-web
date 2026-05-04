@@ -1,12 +1,5 @@
 import { supabase } from '../../lib/supabase'
-
-export type Room = {
-  code: string
-  guest_id: string | null
-  host_id: string
-  id: string
-  status: 'waiting' | 'ready' | 'closed'
-}
+import type { Room } from '../../types/rooms'
 
 type CreateRoomInput = {
   hostId: string
