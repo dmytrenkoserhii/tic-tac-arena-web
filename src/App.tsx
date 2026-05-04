@@ -81,16 +81,17 @@ function App() {
   const { isLoading, profile, profileError, user } = useAuth()
   const [authError, setAuthError] = useState<string | null>(null)
   const [isAuthActionLoading, setIsAuthActionLoading] = useState(false)
-  const [createdRoom, setCreatedRoom] = useState<Room | null>(null)
-  const [joinedRoom, setJoinedRoom] = useState<Room | null>(null)
+  const [activeRoom, setActiveRoom] = useState<Room | null>(null)
   const [joinCode, setJoinCode] = useState('')
   const [roomError, setRoomError] = useState<string | null>(null)
   const [isRoomActionLoading, setIsRoomActionLoading] = useState(false)
   const clipboard = useClipboard({ timeout: 1600 })
 
-  const inviteLink = createdRoom
-    ? `${window.location.origin}?room=${createdRoom.code}`
+  const inviteLink = activeRoom
+    ? `${window.location.origin}?room=${activeRoom.code}`
     : null
+  const playerRole =
+    activeRoom && profile?.id === activeRoom.host_id ? 'Host' : 'Guest'
 
   async function handleGoogleSignIn() {
     setAuthError(null)
@@ -131,8 +132,7 @@ function App() {
     if (error) {
       setRoomError(error.message)
     } else {
-      setCreatedRoom(data)
-      setJoinedRoom(null)
+      setActiveRoom(data)
     }
 
     setIsRoomActionLoading(false)
@@ -162,12 +162,16 @@ function App() {
     if (error) {
       setRoomError(error.message)
     } else {
-      setCreatedRoom(null)
-      setJoinedRoom(data)
+      setActiveRoom(data)
       setJoinCode('')
     }
 
     setIsRoomActionLoading(false)
+  }
+
+  function handleLeaveLocalRoom() {
+    setActiveRoom(null)
+    setRoomError(null)
   }
 
   if (isLoading) {
@@ -210,8 +214,16 @@ function App() {
   return (
     <StatusShell
       eyebrow="Tic Tac Arena"
-      lead="Create a private room and send the invite code to your opponent."
-      title={`Welcome back${profile?.display_name ? `, ${profile.display_name}` : ''}`}
+      lead={
+        activeRoom
+          ? 'You are in a private room. The board comes next.'
+          : 'Create a private room or join one with an invite code.'
+      }
+      title={
+        activeRoom
+          ? `Room ${activeRoom.code}`
+          : `Welcome back${profile?.display_name ? `, ${profile.display_name}` : ''}`
+      }
     >
       <Stack gap="lg">
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
@@ -243,44 +255,23 @@ function App() {
           </Alert>
         ) : null}
 
-        <Paper className={classes.roomCard} p="md" radius="md">
-          <Stack gap="md">
-            <Text className={classes.statusLabel} size="xs" tt="uppercase">
-              Join room
-            </Text>
-            <Group align="flex-end">
-              <TextInput
-                className={classes.roomInput}
-                label="Room code"
-                maxLength={6}
-                onChange={(event) => setJoinCode(event.currentTarget.value)}
-                placeholder="ABC123"
-                value={joinCode}
-              />
-              <Button
-                disabled={!profile}
-                loading={isRoomActionLoading}
-                onClick={handleJoinRoom}
-              >
-                Join room
-              </Button>
-            </Group>
-          </Stack>
-        </Paper>
-
-        {createdRoom ? (
+        {activeRoom ? (
           <Paper className={classes.roomCard} p="md" radius="md">
             <Stack gap="sm">
               <Text className={classes.statusLabel} size="xs" tt="uppercase">
-                Room code
+                Active room
               </Text>
-              <Code className={classes.roomCode}>{createdRoom.code}</Code>
+              <Code className={classes.roomCode}>{activeRoom.code}</Code>
+              <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+                <StatusItem label="Your role" value={playerRole} />
+                <StatusItem label="Room status" value={activeRoom.status} />
+              </SimpleGrid>
               {inviteLink ? (
                 <Text className={classes.statusValue}>{inviteLink}</Text>
               ) : null}
               <Group>
                 <Button
-                  onClick={() => clipboard.copy(createdRoom.code)}
+                  onClick={() => clipboard.copy(activeRoom.code)}
                   variant="light"
                 >
                   {clipboard.copied ? 'Copied' : 'Copy code'}
@@ -293,43 +284,76 @@ function App() {
                     Copy link
                   </Button>
                 ) : null}
+                <Button onClick={handleLeaveLocalRoom} variant="subtle">
+                  Back to lobby
+                </Button>
               </Group>
             </Stack>
           </Paper>
-        ) : null}
+        ) : (
+          <>
+            <Paper className={classes.roomCard} p="md" radius="md">
+              <Stack gap="md">
+                <Text className={classes.statusLabel} size="xs" tt="uppercase">
+                  Join room
+                </Text>
+                <Group align="flex-end">
+                  <TextInput
+                    className={classes.roomInput}
+                    label="Room code"
+                    maxLength={6}
+                    onChange={(event) =>
+                      setJoinCode(normalizeRoomCode(event.currentTarget.value))
+                    }
+                    placeholder="ABC123"
+                    value={joinCode}
+                  />
+                  <Button
+                    disabled={!profile}
+                    loading={isRoomActionLoading}
+                    onClick={handleJoinRoom}
+                  >
+                    Join room
+                  </Button>
+                </Group>
+              </Stack>
+            </Paper>
 
-        {joinedRoom ? (
+            <Group>
+              <Button
+                className={classes.primaryAction}
+                disabled={!profile}
+                loading={isRoomActionLoading}
+                onClick={handleCreateRoom}
+              >
+                Create room
+              </Button>
+              <Button
+                className={classes.primaryAction}
+                loading={isAuthActionLoading}
+                onClick={handleSignOut}
+                variant="light"
+              >
+                Sign out
+              </Button>
+            </Group>
+          </>
+        )}
+
+        {activeRoom ? (
           <Paper className={classes.roomCard} p="md" radius="md">
             <Stack gap="sm">
               <Text className={classes.statusLabel} size="xs" tt="uppercase">
-                Joined room
+                Match status
               </Text>
-              <Code className={classes.roomCode}>{joinedRoom.code}</Code>
               <Text className={classes.statusValue}>
-                You joined as player two. The room is ready.
+                {activeRoom.status === 'ready'
+                  ? 'Both players are in. The game board is the next step.'
+                  : 'Waiting for player two to join.'}
               </Text>
             </Stack>
           </Paper>
         ) : null}
-
-        <Group>
-          <Button
-            className={classes.primaryAction}
-            disabled={!profile}
-            loading={isRoomActionLoading}
-            onClick={handleCreateRoom}
-          >
-            Create room
-          </Button>
-          <Button
-            className={classes.primaryAction}
-            loading={isAuthActionLoading}
-            onClick={handleSignOut}
-            variant="light"
-          >
-            Sign out
-          </Button>
-        </Group>
       </Stack>
     </StatusShell>
   )
