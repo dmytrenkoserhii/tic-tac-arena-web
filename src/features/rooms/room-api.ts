@@ -13,6 +13,8 @@ type JoinRoomInput = {
 const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 const ROOM_CODE_LENGTH = 6
 const MAX_CREATE_ATTEMPTS = 5
+const JOIN_ROOM_ERROR =
+  'Room was not found, is already full, or you are the host.'
 
 export async function createRoom({ hostId }: CreateRoomInput) {
   let lastError: Error | null = null
@@ -42,7 +44,7 @@ export async function createRoom({ hostId }: CreateRoomInput) {
 }
 
 export async function joinRoom({ code, guestId }: JoinRoomInput) {
-  return supabase
+  const { data, error } = await supabase
     .from('rooms')
     .update({
       guest_id: guestId,
@@ -52,7 +54,20 @@ export async function joinRoom({ code, guestId }: JoinRoomInput) {
     .eq('status', 'waiting')
     .is('guest_id', null)
     .select('id, code, host_id, guest_id, status')
-    .single<Room>()
+    .maybeSingle<Room>()
+
+  if (error) {
+    return { data: null, error }
+  }
+
+  if (!data) {
+    return {
+      data: null,
+      error: new Error(JOIN_ROOM_ERROR),
+    }
+  }
+
+  return { data, error: null }
 }
 
 export function normalizeRoomCode(code: string) {
