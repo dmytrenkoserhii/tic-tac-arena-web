@@ -10,6 +10,7 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  TextInput,
   Title,
 } from '@mantine/core'
 import { useClipboard } from '@mantine/hooks'
@@ -17,7 +18,12 @@ import { useState, type ReactNode } from 'react'
 
 import { signInWithGoogle, signOut } from './features/auth/auth-actions'
 import { useAuth } from './features/auth/use-auth'
-import { createRoom, type Room } from './features/rooms/room-api'
+import {
+  createRoom,
+  joinRoom,
+  normalizeRoomCode,
+  type Room,
+} from './features/rooms/room-api'
 import classes from './App.module.css'
 
 type StatusItemProps = {
@@ -76,6 +82,8 @@ function App() {
   const [authError, setAuthError] = useState<string | null>(null)
   const [isAuthActionLoading, setIsAuthActionLoading] = useState(false)
   const [createdRoom, setCreatedRoom] = useState<Room | null>(null)
+  const [joinedRoom, setJoinedRoom] = useState<Room | null>(null)
+  const [joinCode, setJoinCode] = useState('')
   const [roomError, setRoomError] = useState<string | null>(null)
   const [isRoomActionLoading, setIsRoomActionLoading] = useState(false)
   const clipboard = useClipboard({ timeout: 1600 })
@@ -124,6 +132,39 @@ function App() {
       setRoomError(error.message)
     } else {
       setCreatedRoom(data)
+      setJoinedRoom(null)
+    }
+
+    setIsRoomActionLoading(false)
+  }
+
+  async function handleJoinRoom() {
+    if (!profile) {
+      setRoomError('Profile is not ready yet. Refresh the page and try again.')
+      return
+    }
+
+    const normalizedCode = normalizeRoomCode(joinCode)
+
+    if (normalizedCode.length !== 6) {
+      setRoomError('Enter a 6-character room code.')
+      return
+    }
+
+    setRoomError(null)
+    setIsRoomActionLoading(true)
+
+    const { data, error } = await joinRoom({
+      code: normalizedCode,
+      guestId: profile.id,
+    })
+
+    if (error) {
+      setRoomError(error.message)
+    } else {
+      setCreatedRoom(null)
+      setJoinedRoom(data)
+      setJoinCode('')
     }
 
     setIsRoomActionLoading(false)
@@ -202,6 +243,31 @@ function App() {
           </Alert>
         ) : null}
 
+        <Paper className={classes.roomCard} p="md" radius="md">
+          <Stack gap="md">
+            <Text className={classes.statusLabel} size="xs" tt="uppercase">
+              Join room
+            </Text>
+            <Group align="flex-end">
+              <TextInput
+                className={classes.roomInput}
+                label="Room code"
+                maxLength={6}
+                onChange={(event) => setJoinCode(event.currentTarget.value)}
+                placeholder="ABC123"
+                value={joinCode}
+              />
+              <Button
+                disabled={!profile}
+                loading={isRoomActionLoading}
+                onClick={handleJoinRoom}
+              >
+                Join room
+              </Button>
+            </Group>
+          </Stack>
+        </Paper>
+
         {createdRoom ? (
           <Paper className={classes.roomCard} p="md" radius="md">
             <Stack gap="sm">
@@ -228,6 +294,20 @@ function App() {
                   </Button>
                 ) : null}
               </Group>
+            </Stack>
+          </Paper>
+        ) : null}
+
+        {joinedRoom ? (
+          <Paper className={classes.roomCard} p="md" radius="md">
+            <Stack gap="sm">
+              <Text className={classes.statusLabel} size="xs" tt="uppercase">
+                Joined room
+              </Text>
+              <Code className={classes.roomCode}>{joinedRoom.code}</Code>
+              <Text className={classes.statusValue}>
+                You joined as player two. The room is ready.
+              </Text>
             </Stack>
           </Paper>
         ) : null}
