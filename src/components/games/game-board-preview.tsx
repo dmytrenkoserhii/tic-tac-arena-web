@@ -32,9 +32,19 @@ export function GameBoardPreview({
 
   const isHost = profile?.id === room.host_id
   const board = new Map(moves.map((move) => [move.cell_index, move.mark]))
+  const isGameFinished = Boolean(game && game.status !== 'in_progress')
   const nextMark = moves.length % 2 === 0 ? 'x' : 'o'
   const playerMark = profile?.id === game?.x_player_id ? 'x' : 'o'
-  const isPlayerTurn = Boolean(game && profile && playerMark === nextMark)
+  const isPlayerTurn = Boolean(
+    game && profile && !isGameFinished && playerMark === nextMark,
+  )
+  const gameStatusMessage = getGameStatusMessage({
+    game,
+    isPlayerTurn,
+    nextMark,
+    playerMark,
+    profileId: profile?.id ?? null,
+  })
 
   return (
     <Paper className={classes.roomCard} p="md" radius="md">
@@ -46,7 +56,7 @@ export function GameBoardPreview({
           {CELLS.map((cell) => (
             <button
               className={classes.boardCell}
-              disabled={!game || board.has(cell) || !isPlayerTurn}
+              disabled={!game || isGameFinished || board.has(cell) || !isPlayerTurn}
               key={cell}
               onClick={() => onCellClick(cell)}
               type="button"
@@ -56,11 +66,7 @@ export function GameBoardPreview({
           ))}
         </SimpleGrid>
         {game ? (
-          <Text className={classes.statusValue}>
-            {isPlayerTurn
-              ? `Your turn. Place ${playerMark.toUpperCase()}.`
-              : `${nextMark.toUpperCase()} moves next.`}
-          </Text>
+          <Text className={classes.statusValue}>{gameStatusMessage}</Text>
         ) : (
           <Stack gap="sm" align="flex-start">
             <Text className={classes.statusValue}>
@@ -78,4 +84,39 @@ export function GameBoardPreview({
       </Stack>
     </Paper>
   )
+}
+
+type GetGameStatusMessageInput = {
+  game: Game | null
+  isPlayerTurn: boolean
+  nextMark: 'x' | 'o'
+  playerMark: 'x' | 'o'
+  profileId: string | null
+}
+
+function getGameStatusMessage({
+  game,
+  isPlayerTurn,
+  nextMark,
+  playerMark,
+  profileId,
+}: GetGameStatusMessageInput) {
+  if (!game) {
+    return ''
+  }
+
+  if (game.status === 'draw') {
+    return 'Game finished. It is a draw.'
+  }
+
+  if (game.status === 'x_won' || game.status === 'o_won') {
+    const winningMark = game.status === 'x_won' ? 'X' : 'O'
+    const result = game.winner_id === profileId ? 'You won.' : 'You lost.'
+
+    return `Game finished. ${winningMark} won. ${result}`
+  }
+
+  return isPlayerTurn
+    ? `Your turn. Place ${playerMark.toUpperCase()}.`
+    : `${nextMark.toUpperCase()} moves next.`
 }
