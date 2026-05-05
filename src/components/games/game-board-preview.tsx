@@ -3,6 +3,7 @@ import { Button, Paper, SimpleGrid, Stack, Text } from '@mantine/core'
 import type { Game, Move } from '../../types/games'
 import type { Profile } from '../../types/profile'
 import type { Room } from '../../types/rooms'
+import { getGameViewState } from '../../features/games/game-state'
 import classes from '../../App.module.css'
 
 type GameBoardPreviewProps = {
@@ -31,18 +32,10 @@ export function GameBoardPreview({
   }
 
   const isHost = profile?.id === room.host_id
-  const board = new Map(moves.map((move) => [move.cell_index, move.mark]))
-  const isGameFinished = Boolean(game && game.status !== 'in_progress')
-  const nextMark = moves.length % 2 === 0 ? 'x' : 'o'
-  const playerMark = profile?.id === game?.x_player_id ? 'x' : 'o'
-  const isPlayerTurn = Boolean(
-    game && profile && !isGameFinished && playerMark === nextMark,
-  )
-  const gameStatusMessage = getGameStatusMessage({
+  const { board, isGameFinished, isPlayerTurn, statusMessage } =
+    getGameViewState({
     game,
-    isPlayerTurn,
-    nextMark,
-    playerMark,
+    moves,
     profileId: profile?.id ?? null,
   })
 
@@ -67,7 +60,7 @@ export function GameBoardPreview({
         </SimpleGrid>
         {game ? (
           <Stack gap="sm" align="flex-start">
-            <Text className={classes.statusValue}>{gameStatusMessage}</Text>
+            <Text className={classes.statusValue}>{statusMessage}</Text>
             {isGameFinished && profile && isHost ? (
               <Button loading={isLoading} onClick={onStartGame}>
                 Start next game
@@ -91,39 +84,4 @@ export function GameBoardPreview({
       </Stack>
     </Paper>
   )
-}
-
-type GetGameStatusMessageInput = {
-  game: Game | null
-  isPlayerTurn: boolean
-  nextMark: 'x' | 'o'
-  playerMark: 'x' | 'o'
-  profileId: string | null
-}
-
-function getGameStatusMessage({
-  game,
-  isPlayerTurn,
-  nextMark,
-  playerMark,
-  profileId,
-}: GetGameStatusMessageInput) {
-  if (!game) {
-    return ''
-  }
-
-  if (game.status === 'draw') {
-    return 'Game finished. It is a draw.'
-  }
-
-  if (game.status === 'x_won' || game.status === 'o_won') {
-    const winningMark = game.status === 'x_won' ? 'X' : 'O'
-    const result = game.winner_id === profileId ? 'You won.' : 'You lost.'
-
-    return `Game finished. ${winningMark} won. ${result}`
-  }
-
-  return isPlayerTurn
-    ? `Your turn. Place ${playerMark.toUpperCase()}.`
-    : `${nextMark.toUpperCase()} moves next.`
 }
