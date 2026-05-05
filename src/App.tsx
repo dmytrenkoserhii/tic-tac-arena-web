@@ -27,6 +27,11 @@ import type { Room } from './types/rooms'
 
 const ACTIVE_ROOM_CODE_STORAGE_KEY = 'tic-tac-arena:active-room-code'
 
+type InitialRoomCode = {
+  code: string
+  source: 'storage' | 'url'
+}
+
 function App() {
   const { isLoading, profile, profileError, user } = useAuth()
   const [authError, setAuthError] = useState<string | null>(null)
@@ -203,15 +208,15 @@ function App() {
       return
     }
 
-    const roomCode = getInitialRoomCode()
+    const initialRoomCode = getInitialRoomCode()
 
-    if (!roomCode) {
+    if (!initialRoomCode) {
       return
     }
 
     let isActive = true
 
-    void getRoomByCode({ code: roomCode }).then(async ({ data, error }) => {
+    void getRoomByCode({ code: initialRoomCode.code }).then(async ({ data, error }) => {
       if (!isActive) {
         return
       }
@@ -219,9 +224,33 @@ function App() {
       if (error) {
         setRoomError(error.message)
       } else if (data) {
-        setActiveRoom(data)
-        persistActiveRoomCode(data.code)
-        await handleHydrateGame(data)
+        const isRoomPlayer =
+          profile.id === data.host_id || profile.id === data.guest_id
+
+        if (isRoomPlayer) {
+          setActiveRoom(data)
+          persistActiveRoomCode(data.code)
+          await handleHydrateGame(data)
+        } else if (
+          initialRoomCode.source === 'url' &&
+          data.status === 'waiting'
+        ) {
+          const joinResult = await joinRoom({
+            code: data.code,
+            guestId: profile.id,
+          })
+
+          if (joinResult.error) {
+            setRoomError(joinResult.error.message)
+          } else {
+            setActiveRoom(joinResult.data)
+            persistActiveRoomCode(joinResult.data.code)
+            await handleHydrateGame(joinResult.data)
+          }
+        } else {
+          setRoomError('This room is not available for your account.')
+          persistActiveRoomCode(null)
+        }
       } else {
         persistActiveRoomCode(null)
       }
@@ -331,14 +360,26 @@ function App() {
   )
 }
 
-function getInitialRoomCode() {
+function getInitialRoomCode(): InitialRoomCode | null {
   const urlRoomCode = new URLSearchParams(window.location.search).get('room')
 
   if (urlRoomCode) {
-    return normalizeRoomCode(urlRoomCode)
+    return {
+      code: normalizeRoomCode(urlRoomCode),
+      source: 'url',
+    }
   }
 
-  return localStorage.getItem(ACTIVE_ROOM_CODE_STORAGE_KEY)
+  const storedRoomCode = localStorage.getItem(ACTIVE_ROOM_CODE_STORAGE_KEY)
+
+  if (!storedRoomCode) {
+    return null
+  }
+
+  return {
+    code: storedRoomCode,
+    source: 'storage',
+  }
 }
 
 function persistActiveRoomCode(code: string | null) {
