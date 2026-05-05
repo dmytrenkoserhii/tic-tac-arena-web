@@ -33,6 +33,7 @@ type LobbyScreenProps = {
   profile: Profile | null
   profileError: string | null
   roomError: string | null
+  roomNotice: string | null
   userEmail: string | null
 }
 
@@ -57,6 +58,7 @@ export function LobbyScreen({
   profile,
   profileError,
   roomError,
+  roomNotice,
   userEmail,
 }: LobbyScreenProps) {
   return (
@@ -100,6 +102,12 @@ export function LobbyScreen({
         {roomError ? (
           <Alert color="red" radius="md" title="Room action failed">
             {roomError}
+          </Alert>
+        ) : null}
+
+        {roomNotice ? (
+          <Alert color="blue" radius="md" title="Room updated">
+            {roomNotice}
           </Alert>
         ) : null}
 

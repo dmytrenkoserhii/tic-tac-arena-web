@@ -43,6 +43,7 @@ function App() {
   const [activeRoom, setActiveRoom] = useState<Room | null>(null)
   const [joinCode, setJoinCode] = useState('')
   const [roomError, setRoomError] = useState<string | null>(null)
+  const [roomNotice, setRoomNotice] = useState<string | null>(null)
   const [isRoomActionLoading, setIsRoomActionLoading] = useState(false)
   const clipboard = useClipboard({ timeout: 1600 })
 
@@ -97,6 +98,7 @@ function App() {
     }
 
     setRoomError(null)
+    setRoomNotice(null)
     setIsRoomActionLoading(true)
 
     const { data, error } = await createRoom({ hostId: profile.id })
@@ -127,6 +129,7 @@ function App() {
     }
 
     setRoomError(null)
+    setRoomNotice(null)
     setIsRoomActionLoading(true)
 
     const { data, error } = await joinRoom({
@@ -152,6 +155,7 @@ function App() {
     }
 
     setRoomError(null)
+    setRoomNotice(null)
     setIsRoomActionLoading(true)
 
     const { error } = await leaveRoom({ roomId: activeRoom.id })
@@ -175,7 +179,7 @@ function App() {
   function handleRoomChange(room: Room) {
     if (room.status === 'closed') {
       clearActiveRoomState()
-      setRoomError('The room was closed.')
+      setRoomNotice('The room was closed because a player left the match.')
       return
     }
 
@@ -203,6 +207,7 @@ function App() {
     }
 
     setRoomError(null)
+    setRoomNotice(null)
     setIsGameActionLoading(true)
 
     const { data, error } = await createGame({ room: activeRoom })
@@ -323,6 +328,7 @@ function App() {
     }
 
     setRoomError(null)
+    setRoomNotice(null)
 
     const { data, error } = await createMove({
       cellIndex,
@@ -389,6 +395,7 @@ function App() {
       profile={profile}
       profileError={profileError}
       roomError={roomError}
+      roomNotice={roomNotice}
       userEmail={user.email ?? null}
     />
   )
