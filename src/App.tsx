@@ -174,6 +174,7 @@ function App() {
     setActiveGame(null)
     setMoves([])
     persistActiveRoomCode(null)
+    removeRoomCodeFromUrl()
   }
 
   function handleRoomChange(room: Room) {
@@ -429,6 +430,17 @@ function persistActiveRoomCode(code: string | null) {
   } else {
     localStorage.removeItem(ACTIVE_ROOM_CODE_STORAGE_KEY)
   }
+}
+
+function removeRoomCodeFromUrl() {
+  const url = new URL(window.location.href)
+
+  if (!url.searchParams.has('room')) {
+    return
+  }
+
+  url.searchParams.delete('room')
+  window.history.replaceState({}, '', url)
 }
 
 export default App
