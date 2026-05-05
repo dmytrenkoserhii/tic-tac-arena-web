@@ -1,6 +1,7 @@
 import { Button, Code, Group, Paper, SimpleGrid, Stack, Text } from '@mantine/core'
 
 import { StatusItem } from '../ui'
+import { getRoomStatusLabel } from '../../features/rooms/room-state'
 import type { Profile } from '../../types/profile'
 import type { Room } from '../../types/rooms'
 import type { Clipboard } from '../../types/shared'
@@ -34,7 +35,7 @@ export function ActiveRoomPanel({
         <Code className={classes.roomCode}>{room.code}</Code>
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
           <StatusItem label="Your role" value={playerRole} />
-          <StatusItem label="Room status" value={room.status} />
+          <StatusItem label="Room status" value={getRoomStatusLabel(room.status)} />
         </SimpleGrid>
         {inviteLink ? (
           <Text className={classes.statusValue}>{inviteLink}</Text>

@@ -34,10 +34,10 @@ export function GameBoardPreview({
   const isHost = profile?.id === room.host_id
   const { board, isGameFinished, isPlayerTurn, statusMessage } =
     getGameViewState({
-    game,
-    moves,
-    profileId: profile?.id ?? null,
-  })
+      game,
+      moves,
+      profileId: profile?.id ?? null,
+    })
 
   return (
     <Paper className={classes.roomCard} p="md" radius="md">
