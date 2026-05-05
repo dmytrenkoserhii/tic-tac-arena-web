@@ -3,7 +3,12 @@ import { useState } from 'react'
 
 import { signInWithGoogle, signOut } from './features/auth/auth-actions'
 import { useAuth } from './features/auth/use-auth'
-import { createGame, getActiveGame } from './features/games/game-api'
+import {
+  createGame,
+  createMove,
+  getActiveGame,
+  getMoves,
+} from './features/games/game-api'
 import { useGameRealtime } from './features/games/use-game-realtime'
 import {
   createRoom,
@@ -14,7 +19,7 @@ import { useRoomRealtime } from './features/rooms/use-room-realtime'
 import { SignInScreen } from './components/auth'
 import { StatusShell } from './components/layout'
 import { LobbyScreen } from './components/rooms'
-import type { Game } from './types/games'
+import type { Game, Move } from './types/games'
 import type { Room } from './types/rooms'
 
 function App() {
@@ -23,6 +28,7 @@ function App() {
   const [activeGame, setActiveGame] = useState<Game | null>(null)
   const [isAuthActionLoading, setIsAuthActionLoading] = useState(false)
   const [isGameActionLoading, setIsGameActionLoading] = useState(false)
+  const [moves, setMoves] = useState<Move[]>([])
   const [activeRoom, setActiveRoom] = useState<Room | null>(null)
   const [joinCode, setJoinCode] = useState('')
   const [roomError, setRoomError] = useState<string | null>(null)
@@ -123,6 +129,7 @@ function App() {
   function handleLeaveLocalRoom() {
     setActiveRoom(null)
     setActiveGame(null)
+    setMoves([])
     setRoomError(null)
   }
 
@@ -140,6 +147,7 @@ function App() {
       setRoomError(error.message)
     } else {
       setActiveGame(data)
+      setMoves([])
     }
 
     setIsGameActionLoading(false)
@@ -157,6 +165,42 @@ function App() {
       setRoomError(error.message)
     } else {
       setActiveGame(data)
+      if (data) {
+        await handleHydrateMoves(data.id)
+      } else {
+        setMoves([])
+      }
+    }
+  }
+
+  async function handleHydrateMoves(gameId: string) {
+    const { data, error } = await getMoves(gameId)
+
+    if (error) {
+      setRoomError(error.message)
+    } else {
+      setMoves(data ?? [])
+    }
+  }
+
+  async function handleCreateMove(cellIndex: number) {
+    if (!activeGame || !profile) {
+      return
+    }
+
+    setRoomError(null)
+
+    const { data, error } = await createMove({
+      cellIndex,
+      game: activeGame,
+      moveNumber: moves.length + 1,
+      playerId: profile.id,
+    })
+
+    if (error) {
+      setRoomError(error.message)
+    } else {
+      setMoves((currentMoves) => [...currentMoves, data])
     }
   }
 
@@ -191,7 +235,9 @@ function App() {
       isGameActionLoading={isGameActionLoading}
       isRoomActionLoading={isRoomActionLoading}
       joinCode={joinCode}
+      moves={moves}
       onBackToLobby={handleLeaveLocalRoom}
+      onCellClick={handleCreateMove}
       onCreateRoom={handleCreateRoom}
       onJoinCodeChange={(value) => setJoinCode(normalizeRoomCode(value))}
       onJoinRoom={handleJoinRoom}

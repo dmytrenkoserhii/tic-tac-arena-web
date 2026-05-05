@@ -1,9 +1,16 @@
 import { supabase } from '../../lib/supabase'
-import type { Game } from '../../types/games'
+import type { Game, Move } from '../../types/games'
 import type { Room } from '../../types/rooms'
 
 type CreateGameInput = {
   room: Room
+}
+
+type CreateMoveInput = {
+  cellIndex: number
+  game: Game
+  moveNumber: number
+  playerId: string
 }
 
 export async function getActiveGame(roomId: string) {
@@ -42,4 +49,33 @@ export async function createGame({ room }: CreateGameInput) {
     })
     .select('id, room_id, x_player_id, o_player_id, status, winner_id')
     .single<Game>()
+}
+
+export async function getMoves(gameId: string) {
+  return supabase
+    .from('moves')
+    .select('id, game_id, player_id, mark, cell_index, move_number')
+    .eq('game_id', gameId)
+    .order('move_number', { ascending: true })
+}
+
+export async function createMove({
+  cellIndex,
+  game,
+  moveNumber,
+  playerId,
+}: CreateMoveInput) {
+  const mark = playerId === game.x_player_id ? 'x' : 'o'
+
+  return supabase
+    .from('moves')
+    .insert({
+      cell_index: cellIndex,
+      game_id: game.id,
+      mark,
+      move_number: moveNumber,
+      player_id: playerId,
+    })
+    .select('id, game_id, player_id, mark, cell_index, move_number')
+    .single<Move>()
 }

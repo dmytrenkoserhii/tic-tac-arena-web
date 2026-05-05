@@ -6,7 +6,7 @@ import { ActiveRoomPanel } from './active-room-panel'
 import { JoinRoomForm } from './join-room-form'
 import { MatchStatusPanel } from './match-status-panel'
 import { GameBoardPreview } from '../games'
-import type { Game } from '../../types/games'
+import type { Game, Move } from '../../types/games'
 import type { Profile } from '../../types/profile'
 import type { Room } from '../../types/rooms'
 import type { Clipboard } from '../../types/shared'
@@ -22,7 +22,9 @@ type LobbyScreenProps = {
   isGameActionLoading: boolean
   isRoomActionLoading: boolean
   joinCode: string
+  moves: Move[]
   onBackToLobby: () => void
+  onCellClick: (cellIndex: number) => void
   onCreateRoom: () => void
   onStartGame: () => void
   onJoinCodeChange: (value: string) => void
@@ -44,7 +46,9 @@ export function LobbyScreen({
   isGameActionLoading,
   isRoomActionLoading,
   joinCode,
+  moves,
   onBackToLobby,
+  onCellClick,
   onCreateRoom,
   onJoinCodeChange,
   onJoinRoom,
@@ -112,6 +116,8 @@ export function LobbyScreen({
             <GameBoardPreview
               game={game}
               isLoading={isGameActionLoading}
+              moves={moves}
+              onCellClick={onCellClick}
               onStartGame={onStartGame}
               profile={profile}
               room={activeRoom}
