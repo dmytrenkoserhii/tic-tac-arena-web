@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useEffectEvent } from 'react'
 
 import { supabase } from '../../lib/supabase'
 import type { Game } from '../../types/games'
@@ -10,6 +10,8 @@ type UseGameRealtimeInput = {
 }
 
 export function useGameRealtime({ onGameChange, room }: UseGameRealtimeInput) {
+  const handleGameChange = useEffectEvent(onGameChange)
+
   useEffect(() => {
     if (!room) {
       return
@@ -26,7 +28,7 @@ export function useGameRealtime({ onGameChange, room }: UseGameRealtimeInput) {
           table: 'games',
         },
         (payload) => {
-          onGameChange(payload.new as Game)
+          handleGameChange(payload.new as Game)
         },
       )
       .on(
@@ -38,7 +40,7 @@ export function useGameRealtime({ onGameChange, room }: UseGameRealtimeInput) {
           table: 'games',
         },
         (payload) => {
-          onGameChange(payload.new as Game)
+          handleGameChange(payload.new as Game)
         },
       )
       .subscribe()
@@ -46,5 +48,5 @@ export function useGameRealtime({ onGameChange, room }: UseGameRealtimeInput) {
     return () => {
       void supabase.removeChannel(channel)
     }
-  }, [onGameChange, room])
+  }, [room])
 }

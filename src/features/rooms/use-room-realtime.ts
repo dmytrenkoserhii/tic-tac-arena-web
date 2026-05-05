@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useEffectEvent } from 'react'
 
 import { supabase } from '../../lib/supabase'
 import type { Room } from '../../types/rooms'
@@ -9,6 +9,8 @@ type UseRoomRealtimeInput = {
 }
 
 export function useRoomRealtime({ onRoomChange, room }: UseRoomRealtimeInput) {
+  const handleRoomChange = useEffectEvent(onRoomChange)
+
   useEffect(() => {
     if (!room) {
       return
@@ -25,7 +27,7 @@ export function useRoomRealtime({ onRoomChange, room }: UseRoomRealtimeInput) {
           table: 'rooms',
         },
         (payload) => {
-          onRoomChange(payload.new as Room)
+          handleRoomChange(payload.new as Room)
         },
       )
       .subscribe()
@@ -33,5 +35,5 @@ export function useRoomRealtime({ onRoomChange, room }: UseRoomRealtimeInput) {
     return () => {
       void supabase.removeChannel(channel)
     }
-  }, [onRoomChange, room])
+  }, [room])
 }
