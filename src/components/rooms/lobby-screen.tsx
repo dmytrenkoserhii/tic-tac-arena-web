@@ -5,6 +5,8 @@ import { StatusItem } from '../ui'
 import { ActiveRoomPanel } from './active-room-panel'
 import { JoinRoomForm } from './join-room-form'
 import { MatchStatusPanel } from './match-status-panel'
+import { GameBoardPreview } from '../games'
+import type { Game } from '../../types/games'
 import type { Profile } from '../../types/profile'
 import type { Room } from '../../types/rooms'
 import type { Clipboard } from '../../types/shared'
@@ -14,12 +16,15 @@ type LobbyScreenProps = {
   activeRoom: Room | null
   authError: string | null
   clipboard: Clipboard
+  game: Game | null
   inviteLink: string | null
   isAuthActionLoading: boolean
+  isGameActionLoading: boolean
   isRoomActionLoading: boolean
   joinCode: string
   onBackToLobby: () => void
   onCreateRoom: () => void
+  onStartGame: () => void
   onJoinCodeChange: (value: string) => void
   onJoinRoom: () => void
   onSignOut: () => void
@@ -33,8 +38,10 @@ export function LobbyScreen({
   activeRoom,
   authError,
   clipboard,
+  game,
   inviteLink,
   isAuthActionLoading,
+  isGameActionLoading,
   isRoomActionLoading,
   joinCode,
   onBackToLobby,
@@ -42,6 +49,7 @@ export function LobbyScreen({
   onJoinCodeChange,
   onJoinRoom,
   onSignOut,
+  onStartGame,
   profile,
   profileError,
   roomError,
@@ -101,6 +109,13 @@ export function LobbyScreen({
               room={activeRoom}
             />
             <MatchStatusPanel room={activeRoom} />
+            <GameBoardPreview
+              game={game}
+              isLoading={isGameActionLoading}
+              onStartGame={onStartGame}
+              profile={profile}
+              room={activeRoom}
+            />
           </>
         ) : (
           <>

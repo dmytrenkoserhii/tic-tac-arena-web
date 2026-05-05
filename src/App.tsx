@@ -3,6 +3,8 @@ import { useState } from 'react'
 
 import { signInWithGoogle, signOut } from './features/auth/auth-actions'
 import { useAuth } from './features/auth/use-auth'
+import { createGame, getActiveGame } from './features/games/game-api'
+import { useGameRealtime } from './features/games/use-game-realtime'
 import {
   createRoom,
   joinRoom,
@@ -12,12 +14,15 @@ import { useRoomRealtime } from './features/rooms/use-room-realtime'
 import { SignInScreen } from './components/auth'
 import { StatusShell } from './components/layout'
 import { LobbyScreen } from './components/rooms'
+import type { Game } from './types/games'
 import type { Room } from './types/rooms'
 
 function App() {
   const { isLoading, profile, profileError, user } = useAuth()
   const [authError, setAuthError] = useState<string | null>(null)
+  const [activeGame, setActiveGame] = useState<Game | null>(null)
   const [isAuthActionLoading, setIsAuthActionLoading] = useState(false)
+  const [isGameActionLoading, setIsGameActionLoading] = useState(false)
   const [activeRoom, setActiveRoom] = useState<Room | null>(null)
   const [joinCode, setJoinCode] = useState('')
   const [roomError, setRoomError] = useState<string | null>(null)
@@ -30,6 +35,11 @@ function App() {
 
   useRoomRealtime({
     onRoomChange: setActiveRoom,
+    room: activeRoom,
+  })
+
+  useGameRealtime({
+    onGameChange: setActiveGame,
     room: activeRoom,
   })
 
@@ -104,6 +114,7 @@ function App() {
     } else {
       setActiveRoom(data)
       setJoinCode('')
+      await handleHydrateGame(data)
     }
 
     setIsRoomActionLoading(false)
@@ -111,7 +122,42 @@ function App() {
 
   function handleLeaveLocalRoom() {
     setActiveRoom(null)
+    setActiveGame(null)
     setRoomError(null)
+  }
+
+  async function handleStartGame() {
+    if (!activeRoom) {
+      return
+    }
+
+    setRoomError(null)
+    setIsGameActionLoading(true)
+
+    const { data, error } = await createGame({ room: activeRoom })
+
+    if (error) {
+      setRoomError(error.message)
+    } else {
+      setActiveGame(data)
+    }
+
+    setIsGameActionLoading(false)
+  }
+
+  async function handleHydrateGame(room: Room) {
+    if (room.status !== 'ready') {
+      setActiveGame(null)
+      return
+    }
+
+    const { data, error } = await getActiveGame(room.id)
+
+    if (error) {
+      setRoomError(error.message)
+    } else {
+      setActiveGame(data)
+    }
   }
 
   if (isLoading) {
@@ -139,8 +185,10 @@ function App() {
       activeRoom={activeRoom}
       authError={authError}
       clipboard={clipboard}
+      game={activeGame}
       inviteLink={inviteLink}
       isAuthActionLoading={isAuthActionLoading}
+      isGameActionLoading={isGameActionLoading}
       isRoomActionLoading={isRoomActionLoading}
       joinCode={joinCode}
       onBackToLobby={handleLeaveLocalRoom}
@@ -148,6 +196,7 @@ function App() {
       onJoinCodeChange={(value) => setJoinCode(normalizeRoomCode(value))}
       onJoinRoom={handleJoinRoom}
       onSignOut={handleSignOut}
+      onStartGame={handleStartGame}
       profile={profile}
       profileError={profileError}
       roomError={roomError}

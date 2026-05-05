@@ -68,6 +68,22 @@
   min-width: 220px;
 }
 
+.boardGrid {
+  width: min(100%, 300px);
+}
+
+.boardCell {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.04);
+  font: inherit;
+  font-size: 1.8rem;
+}
+
 @media (max-width: 760px) {
   .statusTitle {
     max-width: 100%;
