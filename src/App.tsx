@@ -16,6 +16,7 @@ import {
   createRoom,
   getRoomByCode,
   joinRoom,
+  leaveRoom,
   normalizeRoomCode,
 } from './features/rooms/room-api'
 import { useRoomRealtime } from './features/rooms/use-room-realtime'
@@ -50,7 +51,7 @@ function App() {
     : null
 
   useRoomRealtime({
-    onRoomChange: setActiveRoom,
+    onRoomChange: handleRoomChange,
     room: activeRoom,
   })
 
@@ -145,12 +146,45 @@ function App() {
     setIsRoomActionLoading(false)
   }
 
-  function handleLeaveLocalRoom() {
+  async function handleLeaveRoom() {
+    if (!activeRoom) {
+      return
+    }
+
+    setRoomError(null)
+    setIsRoomActionLoading(true)
+
+    const { error } = await leaveRoom({ roomId: activeRoom.id })
+
+    if (error) {
+      setRoomError(error.message)
+    } else {
+      clearActiveRoomState()
+    }
+
+    setIsRoomActionLoading(false)
+  }
+
+  function clearActiveRoomState() {
     setActiveRoom(null)
     setActiveGame(null)
     setMoves([])
-    setRoomError(null)
     persistActiveRoomCode(null)
+  }
+
+  function handleRoomChange(room: Room) {
+    if (room.status === 'closed') {
+      clearActiveRoomState()
+      setRoomError('The room was closed.')
+      return
+    }
+
+    setActiveRoom(room)
+
+    if (room.status !== 'ready') {
+      setActiveGame(null)
+      setMoves([])
+    }
   }
 
   function handleGameChange(game: Game) {
@@ -345,7 +379,7 @@ function App() {
       isRoomActionLoading={isRoomActionLoading}
       joinCode={joinCode}
       moves={moves}
-      onBackToLobby={handleLeaveLocalRoom}
+      onBackToLobby={handleLeaveRoom}
       onCellClick={handleCreateMove}
       onCreateRoom={handleCreateRoom}
       onJoinCodeChange={(value) => setJoinCode(normalizeRoomCode(value))}

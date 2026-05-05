@@ -14,6 +14,10 @@ type GetRoomByCodeInput = {
   code: string
 }
 
+type LeaveRoomInput = {
+  roomId: string
+}
+
 const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 const ROOM_CODE_LENGTH = 6
 const MAX_CREATE_ATTEMPTS = 5
@@ -80,6 +84,14 @@ export async function getRoomByCode({ code }: GetRoomByCodeInput) {
     .select('id, code, host_id, guest_id, status')
     .eq('code', normalizeRoomCode(code))
     .maybeSingle<Room>()
+}
+
+export async function leaveRoom({ roomId }: LeaveRoomInput) {
+  return supabase
+    .rpc('leave_room', {
+      room_id_input: roomId,
+    })
+    .single<Room>()
 }
 
 export function normalizeRoomCode(code: string) {

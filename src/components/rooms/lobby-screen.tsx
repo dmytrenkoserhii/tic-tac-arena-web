@@ -108,6 +108,7 @@ export function LobbyScreen({
             <ActiveRoomPanel
               clipboard={clipboard}
               inviteLink={inviteLink}
+              isLeaving={isRoomActionLoading}
               onBackToLobby={onBackToLobby}
               profile={profile}
               room={activeRoom}

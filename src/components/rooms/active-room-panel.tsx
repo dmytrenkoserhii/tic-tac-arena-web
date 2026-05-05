@@ -9,6 +9,7 @@ import classes from '../../App.module.css'
 type ActiveRoomPanelProps = {
   clipboard: Clipboard
   inviteLink: string | null
+  isLeaving: boolean
   onBackToLobby: () => void
   profile: Profile | null
   room: Room
@@ -17,6 +18,7 @@ type ActiveRoomPanelProps = {
 export function ActiveRoomPanel({
   clipboard,
   inviteLink,
+  isLeaving,
   onBackToLobby,
   profile,
   room,
@@ -46,8 +48,8 @@ export function ActiveRoomPanel({
               Copy link
             </Button>
           ) : null}
-          <Button onClick={onBackToLobby} variant="subtle">
-            Back to lobby
+          <Button loading={isLeaving} onClick={onBackToLobby} variant="subtle">
+            Leave room
           </Button>
         </Group>
       </Stack>
