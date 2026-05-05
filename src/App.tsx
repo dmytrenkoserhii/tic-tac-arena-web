@@ -7,6 +7,7 @@ import {
   createGame,
   createMove,
   getActiveGame,
+  getGame,
   getMoves,
 } from './features/games/game-api'
 import { useGameRealtime } from './features/games/use-game-realtime'
@@ -46,7 +47,7 @@ function App() {
   })
 
   useGameRealtime({
-    onGameChange: setActiveGame,
+    onGameChange: handleGameChange,
     room: activeRoom,
   })
 
@@ -139,6 +140,16 @@ function App() {
     setRoomError(null)
   }
 
+  function handleGameChange(game: Game) {
+    setActiveGame((currentGame) => {
+      if (currentGame?.id !== game.id) {
+        setMoves([])
+      }
+
+      return game
+    })
+  }
+
   async function handleStartGame() {
     if (!activeRoom) {
       return
@@ -217,6 +228,17 @@ function App() {
       setRoomError(error.message)
     } else {
       handleMoveCreate(data)
+      await handleHydrateCurrentGame(activeGame.id)
+    }
+  }
+
+  async function handleHydrateCurrentGame(gameId: string) {
+    const { data, error } = await getGame(gameId)
+
+    if (error) {
+      setRoomError(error.message)
+    } else {
+      handleGameChange(data)
     }
   }
 

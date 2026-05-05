@@ -20,6 +20,14 @@ export async function getActiveGame(roomId: string) {
     .maybeSingle<Game>()
 }
 
+export async function getGame(gameId: string) {
+  return supabase
+    .from('games')
+    .select('id, room_id, x_player_id, o_player_id, status, winner_id')
+    .eq('id', gameId)
+    .single<Game>()
+}
+
 export async function createGame({ room }: CreateGameInput) {
   if (!room.guest_id) {
     return {

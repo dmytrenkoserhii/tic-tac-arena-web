@@ -66,7 +66,14 @@ export function GameBoardPreview({
           ))}
         </SimpleGrid>
         {game ? (
-          <Text className={classes.statusValue}>{gameStatusMessage}</Text>
+          <Stack gap="sm" align="flex-start">
+            <Text className={classes.statusValue}>{gameStatusMessage}</Text>
+            {isGameFinished && profile && isHost ? (
+              <Button loading={isLoading} onClick={onStartGame}>
+                Start next game
+              </Button>
+            ) : null}
+          </Stack>
         ) : (
           <Stack gap="sm" align="flex-start">
             <Text className={classes.statusValue}>
