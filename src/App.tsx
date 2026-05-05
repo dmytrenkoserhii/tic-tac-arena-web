@@ -1,4 +1,3 @@
-import { useClipboard } from '@mantine/hooks'
 import { useEffect, useState } from 'react'
 
 import { signInWithGoogle, signOut } from './features/auth/auth-actions'
@@ -45,7 +44,6 @@ function App() {
   const [roomError, setRoomError] = useState<string | null>(null)
   const [roomNotice, setRoomNotice] = useState<string | null>(null)
   const [isRoomActionLoading, setIsRoomActionLoading] = useState(false)
-  const clipboard = useClipboard({ timeout: 1600 })
 
   const inviteLink = activeRoom
     ? `${window.location.origin}?room=${activeRoom.code}`
@@ -378,7 +376,6 @@ function App() {
     <LobbyScreen
       activeRoom={activeRoom}
       authError={authError}
-      clipboard={clipboard}
       game={activeGame}
       inviteLink={inviteLink}
       isAuthActionLoading={isAuthActionLoading}

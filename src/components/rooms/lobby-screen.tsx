@@ -9,13 +9,11 @@ import { GameBoardPreview } from '../games'
 import type { Game, Move } from '../../types/games'
 import type { Profile } from '../../types/profile'
 import type { Room } from '../../types/rooms'
-import type { Clipboard } from '../../types/shared'
 import classes from '../../App.module.css'
 
 type LobbyScreenProps = {
   activeRoom: Room | null
   authError: string | null
-  clipboard: Clipboard
   game: Game | null
   inviteLink: string | null
   isAuthActionLoading: boolean
@@ -40,7 +38,6 @@ type LobbyScreenProps = {
 export function LobbyScreen({
   activeRoom,
   authError,
-  clipboard,
   game,
   inviteLink,
   isAuthActionLoading,
@@ -114,7 +111,6 @@ export function LobbyScreen({
         {activeRoom ? (
           <>
             <ActiveRoomPanel
-              clipboard={clipboard}
               inviteLink={inviteLink}
               isLeaving={isRoomActionLoading}
               onBackToLobby={onBackToLobby}
