@@ -10,6 +10,10 @@ type JoinRoomInput = {
   guestId: string
 }
 
+type GetRoomByCodeInput = {
+  code: string
+}
+
 const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 const ROOM_CODE_LENGTH = 6
 const MAX_CREATE_ATTEMPTS = 5
@@ -68,6 +72,14 @@ export async function joinRoom({ code, guestId }: JoinRoomInput) {
   }
 
   return { data, error: null }
+}
+
+export async function getRoomByCode({ code }: GetRoomByCodeInput) {
+  return supabase
+    .from('rooms')
+    .select('id, code, host_id, guest_id, status')
+    .eq('code', normalizeRoomCode(code))
+    .maybeSingle<Room>()
 }
 
 export function normalizeRoomCode(code: string) {

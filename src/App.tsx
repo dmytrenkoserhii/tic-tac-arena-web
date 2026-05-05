@@ -1,12 +1,12 @@
 import { useClipboard } from '@mantine/hooks'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { signInWithGoogle, signOut } from './features/auth/auth-actions'
 import { useAuth } from './features/auth/use-auth'
 import {
   createGame,
   createMove,
-  getActiveGame,
+  getCurrentRoomGame,
   getGame,
   getMoves,
 } from './features/games/game-api'
@@ -14,6 +14,7 @@ import { useGameRealtime } from './features/games/use-game-realtime'
 import { useMovesRealtime } from './features/games/use-moves-realtime'
 import {
   createRoom,
+  getRoomByCode,
   joinRoom,
   normalizeRoomCode,
 } from './features/rooms/room-api'
@@ -23,6 +24,8 @@ import { StatusShell } from './components/layout'
 import { LobbyScreen } from './components/rooms'
 import type { Game, Move } from './types/games'
 import type { Room } from './types/rooms'
+
+const ACTIVE_ROOM_CODE_STORAGE_KEY = 'tic-tac-arena:active-room-code'
 
 function App() {
   const { isLoading, profile, profileError, user } = useAuth()
@@ -94,8 +97,11 @@ function App() {
 
     if (error) {
       setRoomError(error.message)
+    } else if (!data) {
+      setRoomError('Room was not created. Try again.')
     } else {
       setActiveRoom(data)
+      persistActiveRoomCode(data.code)
     }
 
     setIsRoomActionLoading(false)
@@ -126,6 +132,7 @@ function App() {
       setRoomError(error.message)
     } else {
       setActiveRoom(data)
+      persistActiveRoomCode(data.code)
       setJoinCode('')
       await handleHydrateGame(data)
     }
@@ -138,6 +145,7 @@ function App() {
     setActiveGame(null)
     setMoves([])
     setRoomError(null)
+    persistActiveRoomCode(null)
   }
 
   function handleGameChange(game: Game) {
@@ -176,7 +184,7 @@ function App() {
       return
     }
 
-    const { data, error } = await getActiveGame(room.id)
+    const { data, error } = await getCurrentRoomGame(room.id)
 
     if (error) {
       setRoomError(error.message)
@@ -189,6 +197,40 @@ function App() {
       }
     }
   }
+
+  useEffect(() => {
+    if (!profile || activeRoom) {
+      return
+    }
+
+    const roomCode = getInitialRoomCode()
+
+    if (!roomCode) {
+      return
+    }
+
+    let isActive = true
+
+    void getRoomByCode({ code: roomCode }).then(async ({ data, error }) => {
+      if (!isActive) {
+        return
+      }
+
+      if (error) {
+        setRoomError(error.message)
+      } else if (data) {
+        setActiveRoom(data)
+        persistActiveRoomCode(data.code)
+        await handleHydrateGame(data)
+      } else {
+        persistActiveRoomCode(null)
+      }
+    })
+
+    return () => {
+      isActive = false
+    }
+  }, [activeRoom, profile])
 
   async function handleHydrateMoves(gameId: string) {
     const { data, error } = await getMoves(gameId)
@@ -287,6 +329,24 @@ function App() {
       userEmail={user.email ?? null}
     />
   )
+}
+
+function getInitialRoomCode() {
+  const urlRoomCode = new URLSearchParams(window.location.search).get('room')
+
+  if (urlRoomCode) {
+    return normalizeRoomCode(urlRoomCode)
+  }
+
+  return localStorage.getItem(ACTIVE_ROOM_CODE_STORAGE_KEY)
+}
+
+function persistActiveRoomCode(code: string | null) {
+  if (code) {
+    localStorage.setItem(ACTIVE_ROOM_CODE_STORAGE_KEY, code)
+  } else {
+    localStorage.removeItem(ACTIVE_ROOM_CODE_STORAGE_KEY)
+  }
 }
 
 export default App

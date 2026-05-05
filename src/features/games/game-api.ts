@@ -20,6 +20,16 @@ export async function getActiveGame(roomId: string) {
     .maybeSingle<Game>()
 }
 
+export async function getCurrentRoomGame(roomId: string) {
+  return supabase
+    .from('games')
+    .select('id, room_id, x_player_id, o_player_id, status, winner_id')
+    .eq('room_id', roomId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle<Game>()
+}
+
 export async function getGame(gameId: string) {
   return supabase
     .from('games')
