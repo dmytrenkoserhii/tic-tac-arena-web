@@ -46,17 +46,23 @@ export function GameBoardPreview({
           Game board
         </Text>
         <SimpleGrid className={classes.boardGrid} cols={3} spacing="xs">
-          {CELLS.map((cell) => (
-            <button
-              className={classes.boardCell}
-              disabled={!game || isGameFinished || board.has(cell) || !isPlayerTurn}
-              key={cell}
-              onClick={() => onCellClick(cell)}
-              type="button"
-            >
-              {board.get(cell)?.toUpperCase() ?? ''}
-            </button>
-          ))}
+          {CELLS.map((cell) => {
+            const cellMark = board.get(cell)
+
+            return (
+              <button
+                aria-label={getCellLabel({ cell, mark: cellMark })}
+                className={classes.boardCell}
+                data-mark={cellMark}
+                disabled={!game || isGameFinished || Boolean(cellMark) || !isPlayerTurn}
+                key={cell}
+                onClick={() => onCellClick(cell)}
+                type="button"
+              >
+                {cellMark?.toUpperCase() ?? ''}
+              </button>
+            )
+          })}
         </SimpleGrid>
         {game ? (
           <Stack gap="sm" align="flex-start">
@@ -84,4 +90,19 @@ export function GameBoardPreview({
       </Stack>
     </Paper>
   )
+}
+
+type GetCellLabelInput = {
+  cell: number
+  mark?: string
+}
+
+function getCellLabel({ cell, mark }: GetCellLabelInput) {
+  const cellNumber = cell + 1
+
+  if (mark) {
+    return `Cell ${cellNumber}, occupied by ${mark.toUpperCase()}`
+  }
+
+  return `Cell ${cellNumber}, empty`
 }
