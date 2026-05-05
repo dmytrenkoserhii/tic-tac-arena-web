@@ -1,4 +1,5 @@
 import { Button, Group, Paper, Stack, Text, TextInput } from '@mantine/core'
+import type { FormEvent } from 'react'
 
 import classes from '../../App.module.css'
 
@@ -17,8 +18,24 @@ export function JoinRoomForm({
   onJoin,
   onJoinCodeChange,
 }: JoinRoomFormProps) {
+  const isJoinDisabled = isDisabled || joinCode.length !== 6
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    if (!isJoinDisabled) {
+      onJoin()
+    }
+  }
+
   return (
-    <Paper className={classes.roomCard} p="md" radius="md">
+    <Paper
+      className={classes.roomCard}
+      component="form"
+      onSubmit={handleSubmit}
+      p="md"
+      radius="md"
+    >
       <Stack gap="md">
         <Text className={classes.statusLabel} size="xs" tt="uppercase">
           Join room
@@ -32,7 +49,7 @@ export function JoinRoomForm({
             placeholder="ABC123"
             value={joinCode}
           />
-          <Button disabled={isDisabled} loading={isLoading} onClick={onJoin}>
+          <Button disabled={isJoinDisabled} loading={isLoading} type="submit">
             Join room
           </Button>
         </Group>
