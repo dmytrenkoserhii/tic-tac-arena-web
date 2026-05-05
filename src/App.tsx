@@ -10,6 +10,7 @@ import {
   getMoves,
 } from './features/games/game-api'
 import { useGameRealtime } from './features/games/use-game-realtime'
+import { useMovesRealtime } from './features/games/use-moves-realtime'
 import {
   createRoom,
   joinRoom,
@@ -47,6 +48,11 @@ function App() {
   useGameRealtime({
     onGameChange: setActiveGame,
     room: activeRoom,
+  })
+
+  useMovesRealtime({
+    game: activeGame,
+    onMoveCreate: handleMoveCreate,
   })
 
   async function handleGoogleSignIn() {
@@ -183,6 +189,18 @@ function App() {
     }
   }
 
+  function handleMoveCreate(move: Move) {
+    setMoves((currentMoves) => {
+      if (currentMoves.some((currentMove) => currentMove.id === move.id)) {
+        return currentMoves
+      }
+
+      return [...currentMoves, move].sort(
+        (firstMove, secondMove) => firstMove.move_number - secondMove.move_number,
+      )
+    })
+  }
+
   async function handleCreateMove(cellIndex: number) {
     if (!activeGame || !profile) {
       return
@@ -192,15 +210,13 @@ function App() {
 
     const { data, error } = await createMove({
       cellIndex,
-      game: activeGame,
-      moveNumber: moves.length + 1,
-      playerId: profile.id,
+      gameId: activeGame.id,
     })
 
     if (error) {
       setRoomError(error.message)
     } else {
-      setMoves((currentMoves) => [...currentMoves, data])
+      handleMoveCreate(data)
     }
   }
 

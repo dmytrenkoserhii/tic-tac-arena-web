@@ -8,9 +8,7 @@ type CreateGameInput = {
 
 type CreateMoveInput = {
   cellIndex: number
-  game: Game
-  moveNumber: number
-  playerId: string
+  gameId: string
 }
 
 export async function getActiveGame(roomId: string) {
@@ -61,21 +59,12 @@ export async function getMoves(gameId: string) {
 
 export async function createMove({
   cellIndex,
-  game,
-  moveNumber,
-  playerId,
+  gameId,
 }: CreateMoveInput) {
-  const mark = playerId === game.x_player_id ? 'x' : 'o'
-
   return supabase
-    .from('moves')
-    .insert({
-      cell_index: cellIndex,
-      game_id: game.id,
-      mark,
-      move_number: moveNumber,
-      player_id: playerId,
+    .rpc('make_move', {
+      cell_index_input: cellIndex,
+      game_id_input: gameId,
     })
-    .select('id, game_id, player_id, mark, cell_index, move_number')
     .single<Move>()
 }
