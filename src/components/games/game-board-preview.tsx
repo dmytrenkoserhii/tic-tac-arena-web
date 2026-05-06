@@ -9,6 +9,7 @@ import classes from '../../App.module.css'
 type GameBoardPreviewProps = {
   game: Game | null
   isLoading: boolean
+  isMoveLoading: boolean
   moves: Move[]
   onCellClick: (cellIndex: number) => void
   onStartGame: () => void
@@ -21,6 +22,7 @@ const CELLS = Array.from({ length: 9 }, (_, index) => index)
 export function GameBoardPreview({
   game,
   isLoading,
+  isMoveLoading,
   moves,
   onCellClick,
   onStartGame,
@@ -54,7 +56,13 @@ export function GameBoardPreview({
                 aria-label={getCellLabel({ cell, mark: cellMark })}
                 className={classes.boardCell}
                 data-mark={cellMark}
-                disabled={!game || isGameFinished || Boolean(cellMark) || !isPlayerTurn}
+                disabled={
+                  !game ||
+                  isGameFinished ||
+                  isMoveLoading ||
+                  Boolean(cellMark) ||
+                  !isPlayerTurn
+                }
                 key={cell}
                 onClick={() => onCellClick(cell)}
                 type="button"

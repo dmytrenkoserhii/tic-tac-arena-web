@@ -18,6 +18,7 @@ type LobbyScreenProps = {
   inviteLink: string | null
   isAuthActionLoading: boolean
   isGameActionLoading: boolean
+  isMoveActionLoading: boolean
   isRoomActionLoading: boolean
   joinCode: string
   moves: Move[]
@@ -42,6 +43,7 @@ export function LobbyScreen({
   inviteLink,
   isAuthActionLoading,
   isGameActionLoading,
+  isMoveActionLoading,
   isRoomActionLoading,
   joinCode,
   moves,
@@ -121,6 +123,7 @@ export function LobbyScreen({
             <GameBoardPreview
               game={game}
               isLoading={isGameActionLoading}
+              isMoveLoading={isMoveActionLoading}
               moves={moves}
               onCellClick={onCellClick}
               onStartGame={onStartGame}

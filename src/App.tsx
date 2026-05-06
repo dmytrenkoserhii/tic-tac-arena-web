@@ -38,6 +38,7 @@ function App() {
   const [activeGame, setActiveGame] = useState<Game | null>(null)
   const [isAuthActionLoading, setIsAuthActionLoading] = useState(false)
   const [isGameActionLoading, setIsGameActionLoading] = useState(false)
+  const [isMoveActionLoading, setIsMoveActionLoading] = useState(false)
   const [moves, setMoves] = useState<Move[]>([])
   const [activeRoom, setActiveRoom] = useState<Room | null>(null)
   const [joinCode, setJoinCode] = useState('')
@@ -322,12 +323,13 @@ function App() {
   }
 
   async function handleCreateMove(cellIndex: number) {
-    if (!activeGame || !profile) {
+    if (!activeGame || !profile || isMoveActionLoading) {
       return
     }
 
     setRoomError(null)
     setRoomNotice(null)
+    setIsMoveActionLoading(true)
 
     const { data, error } = await createMove({
       cellIndex,
@@ -340,6 +342,8 @@ function App() {
       handleMoveCreate(data)
       await handleHydrateCurrentGame(activeGame.id)
     }
+
+    setIsMoveActionLoading(false)
   }
 
   async function handleHydrateCurrentGame(gameId: string) {
@@ -380,6 +384,7 @@ function App() {
       inviteLink={inviteLink}
       isAuthActionLoading={isAuthActionLoading}
       isGameActionLoading={isGameActionLoading}
+      isMoveActionLoading={isMoveActionLoading}
       isRoomActionLoading={isRoomActionLoading}
       joinCode={joinCode}
       moves={moves}
