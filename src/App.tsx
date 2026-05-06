@@ -180,7 +180,7 @@ function App() {
       const { error } = await leaveRoom({ roomId: activeRoom.id })
 
       if (error) {
-        setRoomError(error.message)
+        setRoomError(getFriendlyRoomErrorMessage(error.message))
       } else {
         clearActiveRoomState()
       }
@@ -202,7 +202,7 @@ function App() {
   function handleRoomChange(room: Room) {
     if (room.status === 'closed') {
       clearActiveRoomState()
-      setRoomNotice('The room was closed because a player left the match.')
+      setRoomNotice('Your opponent left, so this room is closed. Start a fresh room when you are ready.')
       return
     }
 
@@ -480,6 +480,14 @@ function removeRoomCodeFromUrl() {
 
 function getUnknownErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'Unexpected action failure.'
+}
+
+function getFriendlyRoomErrorMessage(message: string) {
+  if (message === 'The room was closed.' || message === 'Room was closed.') {
+    return 'The room has already been closed. You can start a fresh one from the lobby.'
+  }
+
+  return message
 }
 
 export default App

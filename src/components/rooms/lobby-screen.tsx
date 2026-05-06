@@ -86,12 +86,12 @@ export function LobbyScreen({
           />
           <StatusItem
             label="Profile"
-            value={profile ? 'Synced from Supabase' : 'Waiting for profile row'}
+            value={profile ? 'Ready to play' : 'Setting up player profile'}
           />
         </SimpleGrid>
 
         {profileError ? (
-          <Alert color="yellow" radius="md" title="Profile not loaded yet">
+          <Alert color="yellow" radius="md" title="Profile setup needs attention">
             {profileError}
           </Alert>
         ) : null}
@@ -103,7 +103,7 @@ export function LobbyScreen({
         ) : null}
 
         {roomError ? (
-          <Alert color="red" radius="md" title="Room action failed">
+          <Alert color="red" radius="md" title="Room needs attention">
             {roomError}
           </Alert>
         ) : null}
