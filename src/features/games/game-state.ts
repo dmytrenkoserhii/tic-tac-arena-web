@@ -73,17 +73,20 @@ export function getGameStatusMessage({
   }
 
   if (game.status === 'draw') {
-    return 'Game finished. It is a draw.'
+    return 'Round complete. It is a draw.'
   }
 
   if (game.status === 'x_won' || game.status === 'o_won') {
     const winningMark = game.status === 'x_won' ? 'X' : 'O'
-    const result = game.winner_id === profileId ? 'You won.' : 'You lost.'
+    const result =
+      game.winner_id === profileId
+        ? 'You won this round.'
+        : 'Your opponent won this round.'
 
-    return `Game finished. ${winningMark} won. ${result}`
+    return `Round complete. ${winningMark} won. ${result}`
   }
 
   return isPlayerTurn
     ? `Your turn. Place ${playerMark.toUpperCase()}.`
-    : `${nextMark.toUpperCase()} moves next.`
+    : `Waiting for ${nextMark.toUpperCase()} to move.`
 }

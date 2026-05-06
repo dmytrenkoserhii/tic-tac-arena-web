@@ -74,7 +74,9 @@ describe('game-state', () => {
 
     expect(viewState.isGameFinished).toBe(true)
     expect(viewState.isPlayerTurn).toBe(false)
-    expect(viewState.statusMessage).toBe('Game finished. X won. You won.')
+    expect(viewState.statusMessage).toBe(
+      'Round complete. X won. You won this round.',
+    )
   })
 
   it('shows loss feedback for the losing player', () => {
@@ -88,7 +90,9 @@ describe('game-state', () => {
       profileId: O_PLAYER_ID,
     })
 
-    expect(viewState.statusMessage).toBe('Game finished. X won. You lost.')
+    expect(viewState.statusMessage).toBe(
+      'Round complete. X won. Your opponent won this round.',
+    )
   })
 
   it('shows draw feedback when no player won', () => {
@@ -102,6 +106,6 @@ describe('game-state', () => {
     })
 
     expect(viewState.isGameFinished).toBe(true)
-    expect(viewState.statusMessage).toBe('Game finished. It is a draw.')
+    expect(viewState.statusMessage).toBe('Round complete. It is a draw.')
   })
 })
