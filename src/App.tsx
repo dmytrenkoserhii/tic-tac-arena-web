@@ -102,18 +102,22 @@ function App() {
     setRoomNotice(null)
     setIsCreateRoomLoading(true)
 
-    const { data, error } = await createRoom({ hostId: profile.id })
+    try {
+      const { data, error } = await createRoom({ hostId: profile.id })
 
-    if (error) {
-      setRoomError(error.message)
-    } else if (!data) {
-      setRoomError('Room was not created. Try again.')
-    } else {
-      setActiveRoom(data)
-      persistActiveRoomCode(data.code)
+      if (error) {
+        setRoomError(error.message)
+      } else if (!data) {
+        setRoomError('Room was not created. Try again.')
+      } else {
+        setActiveRoom(data)
+        persistActiveRoomCode(data.code)
+      }
+    } catch (error) {
+      setRoomError(getUnknownErrorMessage(error))
+    } finally {
+      setIsCreateRoomLoading(false)
     }
-
-    setIsCreateRoomLoading(false)
   }
 
   async function handleJoinRoom() {
@@ -133,21 +137,25 @@ function App() {
     setRoomNotice(null)
     setIsJoinRoomLoading(true)
 
-    const { data, error } = await joinRoom({
-      code: normalizedCode,
-      guestId: profile.id,
-    })
+    try {
+      const { data, error } = await joinRoom({
+        code: normalizedCode,
+        guestId: profile.id,
+      })
 
-    if (error) {
-      setRoomError(error.message)
-    } else {
-      setActiveRoom(data)
-      persistActiveRoomCode(data.code)
-      setJoinCode('')
-      await handleHydrateGame(data)
+      if (error) {
+        setRoomError(error.message)
+      } else {
+        setActiveRoom(data)
+        persistActiveRoomCode(data.code)
+        setJoinCode('')
+        await handleHydrateGame(data)
+      }
+    } catch (error) {
+      setRoomError(getUnknownErrorMessage(error))
+    } finally {
+      setIsJoinRoomLoading(false)
     }
-
-    setIsJoinRoomLoading(false)
   }
 
   async function handleLeaveRoom() {
@@ -159,15 +167,19 @@ function App() {
     setRoomNotice(null)
     setIsLeaveRoomLoading(true)
 
-    const { error } = await leaveRoom({ roomId: activeRoom.id })
+    try {
+      const { error } = await leaveRoom({ roomId: activeRoom.id })
 
-    if (error) {
-      setRoomError(error.message)
-    } else {
-      clearActiveRoomState()
+      if (error) {
+        setRoomError(error.message)
+      } else {
+        clearActiveRoomState()
+      }
+    } catch (error) {
+      setRoomError(getUnknownErrorMessage(error))
+    } finally {
+      setIsLeaveRoomLoading(false)
     }
-
-    setIsLeaveRoomLoading(false)
   }
 
   function clearActiveRoomState() {
@@ -212,16 +224,20 @@ function App() {
     setRoomNotice(null)
     setIsGameActionLoading(true)
 
-    const { data, error } = await createGame({ room: activeRoom })
+    try {
+      const { data, error } = await createGame({ room: activeRoom })
 
-    if (error) {
-      setRoomError(error.message)
-    } else {
-      setActiveGame(data)
-      setMoves([])
+      if (error) {
+        setRoomError(error.message)
+      } else {
+        setActiveGame(data)
+        setMoves([])
+      }
+    } catch (error) {
+      setRoomError(getUnknownErrorMessage(error))
+    } finally {
+      setIsGameActionLoading(false)
     }
-
-    setIsGameActionLoading(false)
   }
 
   async function handleHydrateGame(room: Room) {
@@ -333,19 +349,23 @@ function App() {
     setRoomNotice(null)
     setIsMoveActionLoading(true)
 
-    const { data, error } = await createMove({
-      cellIndex,
-      gameId: activeGame.id,
-    })
+    try {
+      const { data, error } = await createMove({
+        cellIndex,
+        gameId: activeGame.id,
+      })
 
-    if (error) {
-      setRoomError(error.message)
-    } else {
-      handleMoveCreate(data)
-      await handleHydrateCurrentGame(activeGame.id)
+      if (error) {
+        setRoomError(error.message)
+      } else {
+        handleMoveCreate(data)
+        await handleHydrateCurrentGame(activeGame.id)
+      }
+    } catch (error) {
+      setRoomError(getUnknownErrorMessage(error))
+    } finally {
+      setIsMoveActionLoading(false)
     }
-
-    setIsMoveActionLoading(false)
   }
 
   async function handleHydrateCurrentGame(gameId: string) {
@@ -447,6 +467,10 @@ function removeRoomCodeFromUrl() {
 
   url.searchParams.delete('room')
   window.history.replaceState({}, '', url)
+}
+
+function getUnknownErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : 'Unexpected action failure.'
 }
 
 export default App
