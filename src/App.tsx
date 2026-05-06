@@ -44,7 +44,9 @@ function App() {
   const [joinCode, setJoinCode] = useState('')
   const [roomError, setRoomError] = useState<string | null>(null)
   const [roomNotice, setRoomNotice] = useState<string | null>(null)
-  const [isRoomActionLoading, setIsRoomActionLoading] = useState(false)
+  const [isCreateRoomLoading, setIsCreateRoomLoading] = useState(false)
+  const [isJoinRoomLoading, setIsJoinRoomLoading] = useState(false)
+  const [isLeaveRoomLoading, setIsLeaveRoomLoading] = useState(false)
 
   const inviteLink = activeRoom
     ? `${window.location.origin}?room=${activeRoom.code}`
@@ -98,7 +100,7 @@ function App() {
 
     setRoomError(null)
     setRoomNotice(null)
-    setIsRoomActionLoading(true)
+    setIsCreateRoomLoading(true)
 
     const { data, error } = await createRoom({ hostId: profile.id })
 
@@ -111,7 +113,7 @@ function App() {
       persistActiveRoomCode(data.code)
     }
 
-    setIsRoomActionLoading(false)
+    setIsCreateRoomLoading(false)
   }
 
   async function handleJoinRoom() {
@@ -129,7 +131,7 @@ function App() {
 
     setRoomError(null)
     setRoomNotice(null)
-    setIsRoomActionLoading(true)
+    setIsJoinRoomLoading(true)
 
     const { data, error } = await joinRoom({
       code: normalizedCode,
@@ -145,7 +147,7 @@ function App() {
       await handleHydrateGame(data)
     }
 
-    setIsRoomActionLoading(false)
+    setIsJoinRoomLoading(false)
   }
 
   async function handleLeaveRoom() {
@@ -155,7 +157,7 @@ function App() {
 
     setRoomError(null)
     setRoomNotice(null)
-    setIsRoomActionLoading(true)
+    setIsLeaveRoomLoading(true)
 
     const { error } = await leaveRoom({ roomId: activeRoom.id })
 
@@ -165,7 +167,7 @@ function App() {
       clearActiveRoomState()
     }
 
-    setIsRoomActionLoading(false)
+    setIsLeaveRoomLoading(false)
   }
 
   function clearActiveRoomState() {
@@ -383,9 +385,11 @@ function App() {
       game={activeGame}
       inviteLink={inviteLink}
       isAuthActionLoading={isAuthActionLoading}
+      isCreateRoomLoading={isCreateRoomLoading}
       isGameActionLoading={isGameActionLoading}
+      isJoinRoomLoading={isJoinRoomLoading}
+      isLeaveRoomLoading={isLeaveRoomLoading}
       isMoveActionLoading={isMoveActionLoading}
-      isRoomActionLoading={isRoomActionLoading}
       joinCode={joinCode}
       moves={moves}
       onBackToLobby={handleLeaveRoom}

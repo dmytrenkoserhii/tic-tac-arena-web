@@ -17,9 +17,11 @@ type LobbyScreenProps = {
   game: Game | null
   inviteLink: string | null
   isAuthActionLoading: boolean
+  isCreateRoomLoading: boolean
   isGameActionLoading: boolean
+  isJoinRoomLoading: boolean
+  isLeaveRoomLoading: boolean
   isMoveActionLoading: boolean
-  isRoomActionLoading: boolean
   joinCode: string
   moves: Move[]
   onBackToLobby: () => void
@@ -42,9 +44,11 @@ export function LobbyScreen({
   game,
   inviteLink,
   isAuthActionLoading,
+  isCreateRoomLoading,
   isGameActionLoading,
+  isJoinRoomLoading,
+  isLeaveRoomLoading,
   isMoveActionLoading,
-  isRoomActionLoading,
   joinCode,
   moves,
   onBackToLobby,
@@ -114,7 +118,7 @@ export function LobbyScreen({
           <>
             <ActiveRoomPanel
               inviteLink={inviteLink}
-              isLeaving={isRoomActionLoading}
+              isLeaving={isLeaveRoomLoading}
               onBackToLobby={onBackToLobby}
               profile={profile}
               room={activeRoom}
@@ -135,7 +139,7 @@ export function LobbyScreen({
           <>
             <JoinRoomForm
               isDisabled={!profile}
-              isLoading={isRoomActionLoading}
+              isLoading={isJoinRoomLoading}
               joinCode={joinCode}
               onJoin={onJoinRoom}
               onJoinCodeChange={onJoinCodeChange}
@@ -145,7 +149,7 @@ export function LobbyScreen({
               <Button
                 className={classes.primaryAction}
                 disabled={!profile}
-                loading={isRoomActionLoading}
+                loading={isCreateRoomLoading}
                 onClick={onCreateRoom}
               >
                 Create room
