@@ -76,6 +76,7 @@ Database migrations live in:
 ## Current Game Flow
 
 - Sign in with Google.
+- Sync the authenticated profile through the Nest API.
 - Create a private room through the Nest API.
 - Share the room code or invite link with a second signed-in player.
 - Host starts the game through the Nest API.
