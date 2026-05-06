@@ -18,17 +18,25 @@ export function AuthProvider({ children }: PropsWithChildren) {
     async function bootstrapSession() {
       const {
         data: { session: activeSession },
+        error,
       } = await supabase.auth.getSession()
 
       if (!isMounted) {
         return
       }
 
-      setSession(activeSession)
+      setSession(error ? null : activeSession)
       setIsLoading(false)
     }
 
-    void bootstrapSession()
+    void bootstrapSession().catch(() => {
+      if (!isMounted) {
+        return
+      }
+
+      setSession(null)
+      setIsLoading(false)
+    })
 
     const {
       data: { subscription },
@@ -57,14 +65,23 @@ export function AuthProvider({ children }: PropsWithChildren) {
         return
       }
 
-      const { data, error } = await syncProfile(session.user)
+      try {
+        const { data, error } = await syncProfile(session.user)
 
-      if (!isMounted) {
-        return
+        if (!isMounted) {
+          return
+        }
+
+        setProfile(data)
+        setProfileError(error?.message ?? null)
+      } catch (error) {
+        if (!isMounted) {
+          return
+        }
+
+        setProfile(null)
+        setProfileError(getUnknownErrorMessage(error))
       }
-
-      setProfile(data)
-      setProfileError(error?.message ?? null)
     }
 
     void loadProfile()
@@ -87,4 +104,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
       {children}
     </AuthContext>
   )
+}
+
+function getUnknownErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : 'Profile sync failed.'
 }

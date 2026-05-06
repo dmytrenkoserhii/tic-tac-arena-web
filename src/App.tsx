@@ -71,10 +71,15 @@ function App() {
     setAuthError(null)
     setIsAuthActionLoading(true)
 
-    const { error } = await signInWithGoogle()
+    try {
+      const { error } = await signInWithGoogle()
 
-    if (error) {
-      setAuthError(error.message)
+      if (error) {
+        setAuthError(error.message)
+      }
+    } catch (error) {
+      setAuthError(getUnknownErrorMessage(error))
+    } finally {
       setIsAuthActionLoading(false)
     }
   }
@@ -83,13 +88,17 @@ function App() {
     setAuthError(null)
     setIsAuthActionLoading(true)
 
-    const { error } = await signOut()
+    try {
+      const { error } = await signOut()
 
-    if (error) {
-      setAuthError(error.message)
+      if (error) {
+        setAuthError(error.message)
+      }
+    } catch (error) {
+      setAuthError(getUnknownErrorMessage(error))
+    } finally {
+      setIsAuthActionLoading(false)
     }
-
-    setIsAuthActionLoading(false)
   }
 
   async function handleCreateRoom() {
