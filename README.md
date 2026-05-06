@@ -30,9 +30,12 @@ Fill in:
 ```bash
 VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=
+VITE_API_URL=http://localhost:3000
 ```
 
-These values come from the Supabase project API settings. Use the project URL and the public anon/publishable key only. Do not put service role keys in the web app.
+Supabase values come from the Supabase project API settings. Use the project URL and the public anon/publishable key only. Do not put service role keys in the web app.
+
+`VITE_API_URL` points to the local Nest API.
 
 ## Commands
 
@@ -73,7 +76,7 @@ Database migrations live in:
 ## Current Game Flow
 
 - Sign in with Google.
-- Create a private room.
+- Create a private room through the Nest API.
 - Share the room code or invite link with a second signed-in player.
 - Host starts the game.
 - Moves are persisted through Supabase RPC and synced through Supabase Realtime.
