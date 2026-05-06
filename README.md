@@ -78,7 +78,7 @@ Database migrations live in:
 - Sign in with Google.
 - Create a private room through the Nest API.
 - Share the room code or invite link with a second signed-in player.
-- Host starts the game.
-- Moves are persisted through Supabase RPC and synced through Supabase Realtime.
+- Host starts the game through the Nest API.
+- Moves are submitted through the Nest API, validated by Supabase RPC, and synced through Supabase Realtime.
 - Win/draw status is stored on the game row and synced to both players.
 - Reload restores the active room, current game, and board state.

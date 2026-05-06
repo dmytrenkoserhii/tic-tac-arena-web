@@ -1,4 +1,5 @@
 import { supabase } from '../../lib/supabase'
+import { apiRequest } from '../../lib/api-client'
 import type { Game, Move } from '../../types/games'
 import type { Room } from '../../types/rooms'
 
@@ -46,25 +47,10 @@ export async function createGame({ room }: CreateGameInput) {
     }
   }
 
-  const activeGame = await getActiveGame(room.id)
-
-  if (activeGame.error) {
-    return { data: null, error: activeGame.error }
-  }
-
-  if (activeGame.data) {
-    return { data: activeGame.data, error: null }
-  }
-
-  return supabase
-    .from('games')
-    .insert({
-      o_player_id: room.guest_id,
-      room_id: room.id,
-      x_player_id: room.host_id,
-    })
-    .select('id, room_id, x_player_id, o_player_id, status, winner_id')
-    .single<Game>()
+  return apiRequest<Game>('/games', {
+    body: JSON.stringify({ roomId: room.id }),
+    method: 'POST',
+  })
 }
 
 export async function getMoves(gameId: string) {
@@ -79,10 +65,8 @@ export async function createMove({
   cellIndex,
   gameId,
 }: CreateMoveInput) {
-  return supabase
-    .rpc('make_move', {
-      cell_index_input: cellIndex,
-      game_id_input: gameId,
-    })
-    .single<Move>()
+  return apiRequest<Move>(`/games/${gameId}/moves`, {
+    body: JSON.stringify({ cellIndex }),
+    method: 'POST',
+  })
 }
