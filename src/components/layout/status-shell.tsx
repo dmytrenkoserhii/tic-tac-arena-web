@@ -19,7 +19,7 @@ export function StatusShell({
   return (
     <Box component="main" className={classes.appShell}>
       <Container size="md">
-        <Paper className={classes.statusCard} p="xl" radius="lg">
+        <Paper className={classes.statusCard} p={{ base: 'md', sm: 'xl' }} radius="lg">
           <Stack gap="lg">
             <Stack gap="md">
               <Badge className={classes.eyebrow} variant="light" size="lg">

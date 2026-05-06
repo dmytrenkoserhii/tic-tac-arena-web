@@ -40,16 +40,29 @@ export function ActiveRoomPanel({
         {inviteLink ? (
           <Text className={classes.statusValue}>{inviteLink}</Text>
         ) : null}
-        <Group>
-          <Button onClick={() => codeClipboard.copy(room.code)} variant="light">
+        <Group className={classes.roomActions}>
+          <Button
+            className={classes.responsiveAction}
+            onClick={() => codeClipboard.copy(room.code)}
+            variant="light"
+          >
             {codeClipboard.copied ? 'Code copied' : 'Copy code'}
           </Button>
           {inviteLink ? (
-            <Button onClick={() => linkClipboard.copy(inviteLink)} variant="subtle">
+            <Button
+              className={classes.responsiveAction}
+              onClick={() => linkClipboard.copy(inviteLink)}
+              variant="subtle"
+            >
               {linkClipboard.copied ? 'Link copied' : 'Copy link'}
             </Button>
           ) : null}
-          <Button loading={isLeaving} onClick={onBackToLobby} variant="subtle">
+          <Button
+            className={classes.responsiveAction}
+            loading={isLeaving}
+            onClick={onBackToLobby}
+            variant="subtle"
+          >
             Leave room
           </Button>
         </Group>

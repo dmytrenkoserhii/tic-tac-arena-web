@@ -145,7 +145,7 @@ export function LobbyScreen({
               onJoinCodeChange={onJoinCodeChange}
             />
 
-            <Group>
+            <Group className={classes.roomActions}>
               <Button
                 className={classes.primaryAction}
                 disabled={!profile}

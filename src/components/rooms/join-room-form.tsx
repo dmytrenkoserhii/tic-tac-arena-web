@@ -40,7 +40,7 @@ export function JoinRoomForm({
         <Text className={classes.statusLabel} size="xs" tt="uppercase">
           Join room
         </Text>
-        <Group align="flex-end">
+        <Group align="flex-end" className={classes.joinRoomActions}>
           <TextInput
             className={classes.roomInput}
             label="Room code"
@@ -49,7 +49,12 @@ export function JoinRoomForm({
             placeholder="ABC123"
             value={joinCode}
           />
-          <Button disabled={isJoinDisabled} loading={isLoading} type="submit">
+          <Button
+            className={classes.responsiveAction}
+            disabled={isJoinDisabled}
+            loading={isLoading}
+            type="submit"
+          >
             Join room
           </Button>
         </Group>

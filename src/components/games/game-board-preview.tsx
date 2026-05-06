@@ -76,7 +76,11 @@ export function GameBoardPreview({
           <Stack gap="sm" align="flex-start">
             <Text className={classes.statusValue}>{statusMessage}</Text>
             {isGameFinished && profile && isHost ? (
-              <Button loading={isLoading} onClick={onStartGame}>
+              <Button
+                className={classes.responsiveAction}
+                loading={isLoading}
+                onClick={onStartGame}
+              >
                 Start next game
               </Button>
             ) : null}
@@ -89,7 +93,11 @@ export function GameBoardPreview({
                 : 'Waiting for the host to start the game.'}
             </Text>
             {profile && isHost ? (
-              <Button loading={isLoading} onClick={onStartGame}>
+              <Button
+                className={classes.responsiveAction}
+                loading={isLoading}
+                onClick={onStartGame}
+              >
                 Start game
               </Button>
             ) : null}
