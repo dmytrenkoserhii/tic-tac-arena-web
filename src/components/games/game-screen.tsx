@@ -15,7 +15,7 @@ import { getGameViewState } from '../../features/games/game-state';
 import type { Game, Move } from '../../types/games';
 import type { Profile } from '../../types/profile';
 import type { Room } from '../../types/rooms';
-import classes from '../../App.module.css';
+import classes from './games.module.css';
 
 type GameScreenProps = {
   game: Game | null;

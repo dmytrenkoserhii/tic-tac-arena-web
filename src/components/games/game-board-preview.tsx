@@ -4,7 +4,7 @@ import type { Game, Move } from '../../types/games';
 import type { Profile } from '../../types/profile';
 import type { Room } from '../../types/rooms';
 import { getGameViewState } from '../../features/games/game-state';
-import classes from '../../App.module.css';
+import classes from './games.module.css';
 
 type GameBoardPreviewProps = {
   game: Game | null;

@@ -13,7 +13,7 @@ import { StatusShell } from '../layout';
 import { StatusItem } from '../ui';
 import { JoinRoomForm } from './join-room-form';
 import type { Profile } from '../../types/profile';
-import classes from '../../App.module.css';
+import classes from './rooms.module.css';
 
 type HomeScreenProps = {
   authError: string | null;

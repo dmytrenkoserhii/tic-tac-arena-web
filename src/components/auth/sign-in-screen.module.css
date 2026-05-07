@@ -1,0 +1,13 @@
+.primaryAction {
+  min-width: 220px;
+  min-height: 44px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 520px) {
+  .primaryAction {
+    width: 100%;
+    min-width: 0;
+  }
+}

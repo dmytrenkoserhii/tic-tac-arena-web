@@ -1,6 +1,6 @@
 import { Paper, Text } from '@mantine/core';
 
-import classes from '../../App.module.css';
+import classes from './status-item.module.css';
 
 type StatusItemProps = {
   label: string;

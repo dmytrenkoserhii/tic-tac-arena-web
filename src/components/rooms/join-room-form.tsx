@@ -1,7 +1,7 @@
 import { Button, Group, Paper, Stack, Text, TextInput } from '@mantine/core';
 import type { FormEvent } from 'react';
 
-import classes from '../../App.module.css';
+import classes from './rooms.module.css';
 
 type JoinRoomFormProps = {
   isDisabled: boolean;

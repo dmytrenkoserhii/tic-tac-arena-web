@@ -1,7 +1,7 @@
 import { Alert, Button, Stack } from '@mantine/core';
 
 import { StatusShell } from '../layout';
-import classes from '../../App.module.css';
+import classes from './sign-in-screen.module.css';
 
 type SignInScreenProps = {
   authError: string | null;

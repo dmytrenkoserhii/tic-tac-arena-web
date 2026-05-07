@@ -1,0 +1,88 @@
+.appShell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  padding: clamp(12px, 4vw, 24px);
+}
+
+.appShell::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: '';
+  background:
+    linear-gradient(
+      115deg,
+      transparent 0 42%,
+      rgba(34, 211, 238, 0.08) 42% 43%,
+      transparent 43% 100%
+    ),
+    linear-gradient(
+      245deg,
+      transparent 0 54%,
+      rgba(251, 191, 36, 0.06) 54% 55%,
+      transparent 55% 100%
+    );
+  mask-image: radial-gradient(circle at center, black, transparent 78%);
+}
+
+.statusCard {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.07),
+      rgba(255, 255, 255, 0.03)
+    ),
+    rgba(13, 18, 30, 0.82);
+  backdrop-filter: blur(18px);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  animation: screenReveal 460ms ease both;
+}
+
+.eyebrow {
+  width: fit-content;
+  border: 1px solid rgba(34, 211, 238, 0.2);
+  color: #a5f3fc;
+  letter-spacing: 0.12em;
+  box-shadow: 0 0 30px rgba(34, 211, 238, 0.12);
+}
+
+.statusTitle {
+  max-width: 12ch;
+  color: #f8fafc;
+  font-size: clamp(3rem, 9vw, 6.8rem);
+  line-height: 0.88;
+  letter-spacing: -0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 0 38px rgba(34, 211, 238, 0.16);
+}
+
+.lead {
+  max-width: 48ch;
+  color: rgba(226, 232, 240, 0.86);
+  line-height: 1.65;
+}
+
+@keyframes screenReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 760px) {
+  .statusTitle {
+    max-width: 100%;
+    font-size: 2.5rem;
+  }
+}

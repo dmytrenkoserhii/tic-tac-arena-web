@@ -9,7 +9,7 @@ import {
 } from '@mantine/core';
 import type { ReactNode } from 'react';
 
-import classes from '../../App.module.css';
+import classes from './status-shell.module.css';
 
 type StatusShellProps = {
   children?: ReactNode;

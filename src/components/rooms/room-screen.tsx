@@ -15,7 +15,7 @@ import { StatusShell } from '../layout';
 import { MatchStatusPanel } from './match-status-panel';
 import type { Profile } from '../../types/profile';
 import type { Room } from '../../types/rooms';
-import classes from '../../App.module.css';
+import classes from './rooms.module.css';
 
 type RoomScreenProps = {
   inviteLink: string | null;

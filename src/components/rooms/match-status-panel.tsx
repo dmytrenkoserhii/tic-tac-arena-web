@@ -2,7 +2,7 @@ import { Paper, Stack, Text } from '@mantine/core';
 
 import { getMatchStatusMessage } from '../../features/rooms/room-state';
 import type { Room } from '../../types/rooms';
-import classes from '../../App.module.css';
+import classes from './rooms.module.css';
 
 type MatchStatusPanelProps = {
   room: Room;
