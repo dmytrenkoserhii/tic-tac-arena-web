@@ -50,9 +50,10 @@ export function HomeScreen({
 }: HomeScreenProps) {
   return (
     <StatusShell
-      eyebrow="Tic Tac Arena"
-      lead="Create a private room or join one with an invite code."
-      title={`Welcome back${profile?.display_name ? `, ${profile.display_name}` : ''}`}
+      eyebrow="Arena lobby"
+      kicker={`Welcome back${profile?.display_name ? `, ${profile.display_name}` : ''}`}
+      lead="Host a private match or enter an invite code."
+      title="Tic Tac Arena"
     >
       <Stack gap="lg">
         {profileError ? (
@@ -83,9 +84,13 @@ export function HomeScreen({
           </Alert>
         ) : null}
 
-        <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
+        <SimpleGrid
+          className={classes.homeCommandGrid}
+          cols={{ base: 1, md: 2 }}
+          spacing="lg"
+        >
           <Paper className={classes.homeProfileCard} p="lg" radius="lg">
-            <Stack gap="lg">
+            <Stack className={classes.homeProfileStack} gap="lg">
               <Group justify="space-between" align="flex-start">
                 <Stack gap={4}>
                   <Text

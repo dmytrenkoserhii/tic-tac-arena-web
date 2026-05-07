@@ -29,6 +29,7 @@
 }
 
 .statusCard {
+  width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
     linear-gradient(
@@ -44,6 +45,10 @@
   animation: screenReveal 460ms ease both;
 }
 
+.header[data-variant='compact'] {
+  max-width: 760px;
+}
+
 .eyebrow {
   width: fit-content;
   border: 1px solid rgba(34, 211, 238, 0.2);
@@ -52,12 +57,19 @@
   box-shadow: 0 0 30px rgba(34, 211, 238, 0.12);
 }
 
+.kicker {
+  max-width: 58ch;
+  color: rgba(226, 232, 240, 0.78);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
 .statusTitle {
-  max-width: 12ch;
+  max-width: 10ch;
   color: #f8fafc;
-  font-size: clamp(3rem, 9vw, 6.8rem);
-  line-height: 0.88;
-  letter-spacing: -0.08em;
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 0.9;
+  letter-spacing: -0.075em;
   text-transform: uppercase;
   text-shadow: 0 0 38px rgba(34, 211, 238, 0.16);
 }
@@ -66,6 +78,18 @@
   max-width: 48ch;
   color: rgba(226, 232, 240, 0.86);
   line-height: 1.65;
+}
+
+.statusCard[data-variant='compact'] .statusTitle {
+  max-width: 100%;
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.statusCard[data-variant='compact'] .lead {
+  max-width: 56ch;
+  line-height: 1.45;
 }
 
 @keyframes screenReveal {
@@ -81,8 +105,34 @@
 }
 
 @media (max-width: 760px) {
+  .appShell {
+    align-items: start;
+  }
+
   .statusTitle {
     max-width: 100%;
-    font-size: 2.5rem;
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .statusTitle {
+    font-size: 2.65rem;
+    letter-spacing: -0.06em;
+  }
+
+  .statusCard[data-variant='compact'] .statusTitle {
+    font-size: 1.75rem;
+  }
+
+  .lead {
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusCard {
+    animation: none;
   }
 }

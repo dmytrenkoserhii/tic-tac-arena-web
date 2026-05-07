@@ -63,8 +63,9 @@ export function GameScreen({
   return (
     <StatusShell
       eyebrow={`Room ${room.code}`}
-      lead="The match has moved into the arena. Watch the turn signal, claim the grid, and keep the room controls close."
-      title="Arena"
+      lead="Play the grid, watch the turn, keep the room controls close."
+      title="Live Arena"
+      variant="compact"
     >
       <Stack className={classes.gameArena} gap="lg">
         {roomError ? (
