@@ -163,6 +163,117 @@
   background: rgba(2, 6, 23, 0.34);
 }
 
+.roomStage {
+  min-height: 48svh;
+}
+
+.roomStageHero {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(34, 211, 238, 0.14);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.2), transparent 46%),
+    linear-gradient(180deg, rgba(8, 47, 73, 0.54), rgba(15, 23, 42, 0.76));
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.roomStageHero::before {
+  position: absolute;
+  inset: 14px;
+  pointer-events: none;
+  content: '';
+  border: 1px solid rgba(34, 211, 238, 0.08);
+  border-radius: 18px;
+}
+
+.stageRoomCode {
+  position: relative;
+  z-index: 1;
+  padding: clamp(12px, 3vw, 22px) clamp(16px, 5vw, 34px);
+  border: 1px solid rgba(34, 211, 238, 0.28);
+  color: #ecfeff;
+  font-size: clamp(2.4rem, 11vw, 6rem);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  background:
+    linear-gradient(135deg, rgba(6, 182, 212, 0.24), rgba(2, 6, 23, 0.42)),
+    rgba(8, 47, 73, 0.48);
+  box-shadow:
+    0 0 60px rgba(34, 211, 238, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.stageInviteLink {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  color: rgba(226, 232, 240, 0.72);
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.playerSlot {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.54)),
+    rgba(15, 23, 42, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.playerSlot::before {
+  position: absolute;
+  inset: auto -10% -55% -10%;
+  height: 90%;
+  content: '';
+  opacity: 0.2;
+  filter: blur(10px);
+}
+
+.playerSlot[data-tone='cyan']::before {
+  background: radial-gradient(
+    circle,
+    rgba(34, 211, 238, 0.86),
+    transparent 60%
+  );
+}
+
+.playerSlot[data-tone='yellow']::before {
+  background: radial-gradient(
+    circle,
+    rgba(251, 191, 36, 0.78),
+    transparent 60%
+  );
+}
+
+.playerSlot[data-tone='gray']::before {
+  background: radial-gradient(
+    circle,
+    rgba(148, 163, 184, 0.44),
+    transparent 62%
+  );
+}
+
+.playerMark {
+  position: relative;
+  z-index: 1;
+  color: #f8fafc;
+  font-size: clamp(2.4rem, 8vw, 4.6rem);
+  font-weight: 900;
+  line-height: 0.9;
+}
+
+.launchPanel {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.82), rgba(2, 6, 23, 0.56)),
+    rgba(255, 255, 255, 0.04);
+  text-align: center;
+}
+
 .roomCode {
   width: fit-content;
   padding: 10px 14px;
