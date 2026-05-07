@@ -1,4 +1,4 @@
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase';
 
 export async function signInWithGoogle() {
   return supabase.auth.signInWithOAuth({
@@ -6,9 +6,9 @@ export async function signInWithGoogle() {
     options: {
       redirectTo: window.location.origin,
     },
-  })
+  });
 }
 
 export async function signOut() {
-  return supabase.auth.signOut()
+  return supabase.auth.signOut();
 }

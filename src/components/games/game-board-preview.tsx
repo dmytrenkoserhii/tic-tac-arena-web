@@ -1,23 +1,23 @@
-import { Button, Paper, SimpleGrid, Stack, Text } from '@mantine/core'
+import { Button, Paper, SimpleGrid, Stack, Text } from '@mantine/core';
 
-import type { Game, Move } from '../../types/games'
-import type { Profile } from '../../types/profile'
-import type { Room } from '../../types/rooms'
-import { getGameViewState } from '../../features/games/game-state'
-import classes from '../../App.module.css'
+import type { Game, Move } from '../../types/games';
+import type { Profile } from '../../types/profile';
+import type { Room } from '../../types/rooms';
+import { getGameViewState } from '../../features/games/game-state';
+import classes from '../../App.module.css';
 
 type GameBoardPreviewProps = {
-  game: Game | null
-  isLoading: boolean
-  isMoveLoading: boolean
-  moves: Move[]
-  onCellClick: (cellIndex: number) => void
-  onStartGame: () => void
-  profile: Profile | null
-  room: Room
-}
+  game: Game | null;
+  isLoading: boolean;
+  isMoveLoading: boolean;
+  moves: Move[];
+  onCellClick: (cellIndex: number) => void;
+  onStartGame: () => void;
+  profile: Profile | null;
+  room: Room;
+};
 
-const CELLS = Array.from({ length: 9 }, (_, index) => index)
+const CELLS = Array.from({ length: 9 }, (_, index) => index);
 
 export function GameBoardPreview({
   game,
@@ -30,16 +30,16 @@ export function GameBoardPreview({
   room,
 }: GameBoardPreviewProps) {
   if (room.status !== 'ready') {
-    return null
+    return null;
   }
 
-  const isHost = profile?.id === room.host_id
+  const isHost = profile?.id === room.host_id;
   const { board, isGameFinished, isPlayerTurn, statusMessage } =
     getGameViewState({
       game,
       moves,
       profileId: profile?.id ?? null,
-    })
+    });
 
   return (
     <Paper className={classes.roomCard} p="md" radius="md">
@@ -49,7 +49,7 @@ export function GameBoardPreview({
         </Text>
         <SimpleGrid className={classes.boardGrid} cols={3} spacing="xs">
           {CELLS.map((cell) => {
-            const cellMark = board.get(cell)
+            const cellMark = board.get(cell);
 
             return (
               <button
@@ -69,7 +69,7 @@ export function GameBoardPreview({
               >
                 {cellMark?.toUpperCase() ?? ''}
               </button>
-            )
+            );
           })}
         </SimpleGrid>
         {game ? (
@@ -105,20 +105,20 @@ export function GameBoardPreview({
         )}
       </Stack>
     </Paper>
-  )
+  );
 }
 
 type GetCellLabelInput = {
-  cell: number
-  mark?: string
-}
+  cell: number;
+  mark?: string;
+};
 
 function getCellLabel({ cell, mark }: GetCellLabelInput) {
-  const cellNumber = cell + 1
+  const cellNumber = cell + 1;
 
   if (mark) {
-    return `Cell ${cellNumber}, occupied by ${mark.toUpperCase()}`
+    return `Cell ${cellNumber}, occupied by ${mark.toUpperCase()}`;
   }
 
-  return `Cell ${cellNumber}, empty`
+  return `Cell ${cellNumber}, empty`;
 }

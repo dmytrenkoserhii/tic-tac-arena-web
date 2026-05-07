@@ -1,22 +1,22 @@
-import { useEffect, useEffectEvent } from 'react'
+import { useEffect, useEffectEvent } from 'react';
 
-import { supabase } from '../../lib/supabase'
-import type { Game, Move } from '../../types/games'
+import { supabase } from '../../lib/supabase';
+import type { Game, Move } from '../../types/games';
 
 type UseMovesRealtimeInput = {
-  game: Game | null
-  onMoveCreate: (move: Move) => void
-}
+  game: Game | null;
+  onMoveCreate: (move: Move) => void;
+};
 
 export function useMovesRealtime({
   game,
   onMoveCreate,
 }: UseMovesRealtimeInput) {
-  const handleMoveCreate = useEffectEvent(onMoveCreate)
+  const handleMoveCreate = useEffectEvent(onMoveCreate);
 
   useEffect(() => {
     if (!game) {
-      return
+      return;
     }
 
     const channel = supabase
@@ -30,13 +30,13 @@ export function useMovesRealtime({
           table: 'moves',
         },
         (payload) => {
-          handleMoveCreate(payload.new as Move)
+          handleMoveCreate(payload.new as Move);
         },
       )
-      .subscribe()
+      .subscribe();
 
     return () => {
-      void supabase.removeChannel(channel)
-    }
-  }, [game])
+      void supabase.removeChannel(channel);
+    };
+  }, [game]);
 }

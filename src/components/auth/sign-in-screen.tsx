@@ -1,13 +1,13 @@
-import { Alert, Button, Stack } from '@mantine/core'
+import { Alert, Button, Stack } from '@mantine/core';
 
-import { StatusShell } from '../layout'
-import classes from '../../App.module.css'
+import { StatusShell } from '../layout';
+import classes from '../../App.module.css';
 
 type SignInScreenProps = {
-  authError: string | null
-  isAuthActionLoading: boolean
-  onGoogleSignIn: () => void
-}
+  authError: string | null;
+  isAuthActionLoading: boolean;
+  onGoogleSignIn: () => void;
+};
 
 export function SignInScreen({
   authError,
@@ -37,5 +37,5 @@ export function SignInScreen({
         </Button>
       </Stack>
     </StatusShell>
-  )
+  );
 }

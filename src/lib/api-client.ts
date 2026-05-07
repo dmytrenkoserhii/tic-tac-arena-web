@@ -1,25 +1,25 @@
-import { supabase } from './supabase'
-import { env } from './env'
+import { supabase } from './supabase';
+import { env } from './env';
 
 type ApiErrorBody = {
-  message?: string | string[]
-}
+  message?: string | string[];
+};
 
 export async function apiRequest<TData>(
   path: string,
   options: RequestInit = {},
 ) {
   const { data: sessionData, error: sessionError } =
-    await supabase.auth.getSession()
+    await supabase.auth.getSession();
 
   if (sessionError) {
-    return { data: null, error: sessionError }
+    return { data: null, error: sessionError };
   }
 
-  const accessToken = sessionData.session?.access_token
+  const accessToken = sessionData.session?.access_token;
 
   if (!accessToken) {
-    return { data: null, error: new Error('You must be signed in.') }
+    return { data: null, error: new Error('You must be signed in.') };
   }
 
   const response = await fetch(`${env.apiUrl}${path}`, {
@@ -29,26 +29,26 @@ export async function apiRequest<TData>(
       Authorization: `Bearer ${accessToken}`,
       ...options.headers,
     },
-  })
+  });
 
   if (!response.ok) {
-    return { data: null, error: new Error(await readErrorMessage(response)) }
+    return { data: null, error: new Error(await readErrorMessage(response)) };
   }
 
-  return { data: (await response.json()) as TData, error: null }
+  return { data: (await response.json()) as TData, error: null };
 }
 
 async function readErrorMessage(response: Response) {
   try {
-    const body = (await response.json()) as ApiErrorBody
-    const message = body.message
+    const body = (await response.json()) as ApiErrorBody;
+    const message = body.message;
 
     if (Array.isArray(message)) {
-      return message.join(' ')
+      return message.join(' ');
     }
 
-    return message ?? 'Request failed.'
+    return message ?? 'Request failed.';
   } catch {
-    return 'Request failed.'
+    return 'Request failed.';
   }
 }

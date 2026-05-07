@@ -1,42 +1,42 @@
-import { Alert, Button, Group, SimpleGrid, Stack } from '@mantine/core'
+import { Alert, Button, Group, SimpleGrid, Stack } from '@mantine/core';
 
-import { StatusShell } from '../layout'
-import { StatusItem } from '../ui'
-import { ActiveRoomPanel } from './active-room-panel'
-import { JoinRoomForm } from './join-room-form'
-import { MatchStatusPanel } from './match-status-panel'
-import { GameBoardPreview } from '../games'
-import type { Game, Move } from '../../types/games'
-import type { Profile } from '../../types/profile'
-import type { Room } from '../../types/rooms'
-import classes from '../../App.module.css'
+import { StatusShell } from '../layout';
+import { StatusItem } from '../ui';
+import { ActiveRoomPanel } from './active-room-panel';
+import { JoinRoomForm } from './join-room-form';
+import { MatchStatusPanel } from './match-status-panel';
+import { GameBoardPreview } from '../games';
+import type { Game, Move } from '../../types/games';
+import type { Profile } from '../../types/profile';
+import type { Room } from '../../types/rooms';
+import classes from '../../App.module.css';
 
 type LobbyScreenProps = {
-  activeRoom: Room | null
-  authError: string | null
-  game: Game | null
-  inviteLink: string | null
-  isAuthActionLoading: boolean
-  isCreateRoomLoading: boolean
-  isGameActionLoading: boolean
-  isJoinRoomLoading: boolean
-  isLeaveRoomLoading: boolean
-  isMoveActionLoading: boolean
-  joinCode: string
-  moves: Move[]
-  onBackToLobby: () => void
-  onCellClick: (cellIndex: number) => void
-  onCreateRoom: () => void
-  onStartGame: () => void
-  onJoinCodeChange: (value: string) => void
-  onJoinRoom: () => void
-  onSignOut: () => void
-  profile: Profile | null
-  profileError: string | null
-  roomError: string | null
-  roomNotice: string | null
-  userEmail: string | null
-}
+  activeRoom: Room | null;
+  authError: string | null;
+  game: Game | null;
+  inviteLink: string | null;
+  isAuthActionLoading: boolean;
+  isCreateRoomLoading: boolean;
+  isGameActionLoading: boolean;
+  isJoinRoomLoading: boolean;
+  isLeaveRoomLoading: boolean;
+  isMoveActionLoading: boolean;
+  joinCode: string;
+  moves: Move[];
+  onBackToLobby: () => void;
+  onCellClick: (cellIndex: number) => void;
+  onCreateRoom: () => void;
+  onStartGame: () => void;
+  onJoinCodeChange: (value: string) => void;
+  onJoinRoom: () => void;
+  onSignOut: () => void;
+  profile: Profile | null;
+  profileError: string | null;
+  roomError: string | null;
+  roomNotice: string | null;
+  userEmail: string | null;
+};
 
 export function LobbyScreen({
   activeRoom,
@@ -91,7 +91,11 @@ export function LobbyScreen({
         </SimpleGrid>
 
         {profileError ? (
-          <Alert color="yellow" radius="md" title="Profile setup needs attention">
+          <Alert
+            color="yellow"
+            radius="md"
+            title="Profile setup needs attention"
+          >
             {profileError}
           </Alert>
         ) : null}
@@ -167,5 +171,5 @@ export function LobbyScreen({
         )}
       </Stack>
     </StatusShell>
-  )
+  );
 }

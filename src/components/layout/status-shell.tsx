@@ -1,14 +1,22 @@
-import { Badge, Box, Container, Paper, Stack, Text, Title } from '@mantine/core'
-import type { ReactNode } from 'react'
+import {
+  Badge,
+  Box,
+  Container,
+  Paper,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core';
+import type { ReactNode } from 'react';
 
-import classes from '../../App.module.css'
+import classes from '../../App.module.css';
 
 type StatusShellProps = {
-  children?: ReactNode
-  eyebrow: string
-  lead: string
-  title: string
-}
+  children?: ReactNode;
+  eyebrow: string;
+  lead: string;
+  title: string;
+};
 
 export function StatusShell({
   children,
@@ -19,7 +27,11 @@ export function StatusShell({
   return (
     <Box component="main" className={classes.appShell}>
       <Container size="md">
-        <Paper className={classes.statusCard} p={{ base: 'md', sm: 'xl' }} radius="lg">
+        <Paper
+          className={classes.statusCard}
+          p={{ base: 'md', sm: 'xl' }}
+          radius="lg"
+        >
           <Stack gap="lg">
             <Stack gap="md">
               <Badge className={classes.eyebrow} variant="light" size="lg">
@@ -37,5 +49,5 @@ export function StatusShell({
         </Paper>
       </Container>
     </Box>
-  )
+  );
 }

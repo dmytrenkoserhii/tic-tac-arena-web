@@ -1,19 +1,27 @@
-import { Button, Code, Group, Paper, SimpleGrid, Stack, Text } from '@mantine/core'
-import { useClipboard } from '@mantine/hooks'
+import {
+  Button,
+  Code,
+  Group,
+  Paper,
+  SimpleGrid,
+  Stack,
+  Text,
+} from '@mantine/core';
+import { useClipboard } from '@mantine/hooks';
 
-import { StatusItem } from '../ui'
-import { getRoomStatusLabel } from '../../features/rooms/room-state'
-import type { Profile } from '../../types/profile'
-import type { Room } from '../../types/rooms'
-import classes from '../../App.module.css'
+import { StatusItem } from '../ui';
+import { getRoomStatusLabel } from '../../features/rooms/room-state';
+import type { Profile } from '../../types/profile';
+import type { Room } from '../../types/rooms';
+import classes from '../../App.module.css';
 
 type ActiveRoomPanelProps = {
-  inviteLink: string | null
-  isLeaving: boolean
-  onBackToLobby: () => void
-  profile: Profile | null
-  room: Room
-}
+  inviteLink: string | null;
+  isLeaving: boolean;
+  onBackToLobby: () => void;
+  profile: Profile | null;
+  room: Room;
+};
 
 export function ActiveRoomPanel({
   inviteLink,
@@ -22,9 +30,9 @@ export function ActiveRoomPanel({
   profile,
   room,
 }: ActiveRoomPanelProps) {
-  const codeClipboard = useClipboard({ timeout: 1600 })
-  const linkClipboard = useClipboard({ timeout: 1600 })
-  const playerRole = profile?.id === room.host_id ? 'Host' : 'Guest'
+  const codeClipboard = useClipboard({ timeout: 1600 });
+  const linkClipboard = useClipboard({ timeout: 1600 });
+  const playerRole = profile?.id === room.host_id ? 'Host' : 'Guest';
 
   return (
     <Paper className={classes.roomCard} p="md" radius="md">
@@ -35,7 +43,10 @@ export function ActiveRoomPanel({
         <Code className={classes.roomCode}>{room.code}</Code>
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
           <StatusItem label="Your role" value={playerRole} />
-          <StatusItem label="Room status" value={getRoomStatusLabel(room.status)} />
+          <StatusItem
+            label="Room status"
+            value={getRoomStatusLabel(room.status)}
+          />
         </SimpleGrid>
         {inviteLink ? (
           <Text className={classes.statusValue}>{inviteLink}</Text>
@@ -68,5 +79,5 @@ export function ActiveRoomPanel({
         </Group>
       </Stack>
     </Paper>
-  )
+  );
 }

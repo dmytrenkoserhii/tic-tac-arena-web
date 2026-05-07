@@ -1,1 +1,1 @@
-export { StatusItem } from './status-item'
+export { StatusItem } from './status-item';

@@ -1,11 +1,11 @@
-import { Paper, Text } from '@mantine/core'
+import { Paper, Text } from '@mantine/core';
 
-import classes from '../../App.module.css'
+import classes from '../../App.module.css';
 
 type StatusItemProps = {
-  label: string
-  value: string
-}
+  label: string;
+  value: string;
+};
 
 export function StatusItem({ label, value }: StatusItemProps) {
   return (
@@ -15,5 +15,5 @@ export function StatusItem({ label, value }: StatusItemProps) {
       </Text>
       <Text className={classes.statusValue}>{value}</Text>
     </Paper>
-  )
+  );
 }

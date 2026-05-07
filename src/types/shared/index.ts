@@ -1,1 +1,1 @@
-export type { Clipboard } from './clipboard.interface'
+export type { Clipboard } from './clipboard.interface';

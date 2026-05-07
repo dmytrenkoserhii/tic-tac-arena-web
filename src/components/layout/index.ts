@@ -1,1 +1,1 @@
-export { StatusShell } from './status-shell'
+export { StatusShell } from './status-shell';

@@ -1,95 +1,95 @@
-import { type PropsWithChildren, useEffect, useState } from 'react'
-import type { Session } from '@supabase/supabase-js'
+import { type PropsWithChildren, useEffect, useState } from 'react';
+import type { Session } from '@supabase/supabase-js';
 
-import { AuthContext } from './auth-context'
-import { syncProfile } from '../profile/profile-api'
-import { supabase } from '../../lib/supabase'
-import type { Profile } from '../../types/profile'
+import { AuthContext } from './auth-context';
+import { syncProfile } from '../profile/profile-api';
+import { supabase } from '../../lib/supabase';
+import type { Profile } from '../../types/profile';
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [session, setSession] = useState<Session | null>(null)
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [profileError, setProfileError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [session, setSession] = useState<Session | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true
+    let isMounted = true;
 
     async function bootstrapSession() {
       const {
         data: { session: activeSession },
         error,
-      } = await supabase.auth.getSession()
+      } = await supabase.auth.getSession();
 
       if (!isMounted) {
-        return
+        return;
       }
 
-      setSession(error ? null : activeSession)
-      setIsLoading(false)
+      setSession(error ? null : activeSession);
+      setIsLoading(false);
     }
 
     void bootstrapSession().catch(() => {
       if (!isMounted) {
-        return
+        return;
       }
 
-      setSession(null)
-      setIsLoading(false)
-    })
+      setSession(null);
+      setIsLoading(false);
+    });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       if (!isMounted) {
-        return
+        return;
       }
 
-      setSession(nextSession)
-      setIsLoading(false)
-    })
+      setSession(nextSession);
+      setIsLoading(false);
+    });
 
     return () => {
-      isMounted = false
-      subscription.unsubscribe()
-    }
-  }, [])
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
-    let isMounted = true
+    let isMounted = true;
 
     async function loadProfile() {
       if (!session?.user) {
-        setProfile(null)
-        setProfileError(null)
-        return
+        setProfile(null);
+        setProfileError(null);
+        return;
       }
 
       try {
-        const { data, error } = await syncProfile(session.user)
+        const { data, error } = await syncProfile(session.user);
 
         if (!isMounted) {
-          return
+          return;
         }
 
-        setProfile(data)
-        setProfileError(error?.message ?? null)
+        setProfile(data);
+        setProfileError(error?.message ?? null);
       } catch (error) {
         if (!isMounted) {
-          return
+          return;
         }
 
-        setProfile(null)
-        setProfileError(getUnknownErrorMessage(error))
+        setProfile(null);
+        setProfileError(getUnknownErrorMessage(error));
       }
     }
 
-    void loadProfile()
+    void loadProfile();
 
     return () => {
-      isMounted = false
-    }
-  }, [session])
+      isMounted = false;
+    };
+  }, [session]);
 
   return (
     <AuthContext
@@ -103,9 +103,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
     >
       {children}
     </AuthContext>
-  )
+  );
 }
 
 function getUnknownErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : 'Profile sync failed.'
+  return error instanceof Error ? error.message : 'Profile sync failed.';
 }

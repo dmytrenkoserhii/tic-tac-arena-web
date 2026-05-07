@@ -1,389 +1,394 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 
-import { signInWithGoogle, signOut } from './features/auth/auth-actions'
-import { useAuth } from './features/auth/use-auth'
+import { signInWithGoogle, signOut } from './features/auth/auth-actions';
+import { useAuth } from './features/auth/use-auth';
 import {
   createGame,
   createMove,
   getCurrentRoomGame,
   getGame,
   getMoves,
-} from './features/games/game-api'
-import { useGameRealtime } from './features/games/use-game-realtime'
-import { useMovesRealtime } from './features/games/use-moves-realtime'
+} from './features/games/game-api';
+import { useGameRealtime } from './features/games/use-game-realtime';
+import { useMovesRealtime } from './features/games/use-moves-realtime';
 import {
   createRoom,
   getRoomByCode,
   joinRoom,
   leaveRoom,
   normalizeRoomCode,
-} from './features/rooms/room-api'
-import { useRoomRealtime } from './features/rooms/use-room-realtime'
-import { SignInScreen } from './components/auth'
-import { StatusShell } from './components/layout'
-import { LobbyScreen } from './components/rooms'
-import type { Game, Move } from './types/games'
-import type { Room } from './types/rooms'
+} from './features/rooms/room-api';
+import { useRoomRealtime } from './features/rooms/use-room-realtime';
+import { SignInScreen } from './components/auth';
+import { StatusShell } from './components/layout';
+import { LobbyScreen } from './components/rooms';
+import type { Game, Move } from './types/games';
+import type { Room } from './types/rooms';
 
-const ACTIVE_ROOM_CODE_STORAGE_KEY = 'tic-tac-arena:active-room-code'
+const ACTIVE_ROOM_CODE_STORAGE_KEY = 'tic-tac-arena:active-room-code';
 
 type InitialRoomCode = {
-  code: string
-  source: 'storage' | 'url'
-}
+  code: string;
+  source: 'storage' | 'url';
+};
 
 function App() {
-  const { isLoading, profile, profileError, user } = useAuth()
-  const [authError, setAuthError] = useState<string | null>(null)
-  const [activeGame, setActiveGame] = useState<Game | null>(null)
-  const [isAuthActionLoading, setIsAuthActionLoading] = useState(false)
-  const [isGameActionLoading, setIsGameActionLoading] = useState(false)
-  const [isMoveActionLoading, setIsMoveActionLoading] = useState(false)
-  const [moves, setMoves] = useState<Move[]>([])
-  const [activeRoom, setActiveRoom] = useState<Room | null>(null)
-  const [joinCode, setJoinCode] = useState('')
-  const [roomError, setRoomError] = useState<string | null>(null)
-  const [roomNotice, setRoomNotice] = useState<string | null>(null)
-  const [isCreateRoomLoading, setIsCreateRoomLoading] = useState(false)
-  const [isJoinRoomLoading, setIsJoinRoomLoading] = useState(false)
-  const [isLeaveRoomLoading, setIsLeaveRoomLoading] = useState(false)
+  const { isLoading, profile, profileError, user } = useAuth();
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [activeGame, setActiveGame] = useState<Game | null>(null);
+  const [isAuthActionLoading, setIsAuthActionLoading] = useState(false);
+  const [isGameActionLoading, setIsGameActionLoading] = useState(false);
+  const [isMoveActionLoading, setIsMoveActionLoading] = useState(false);
+  const [moves, setMoves] = useState<Move[]>([]);
+  const [activeRoom, setActiveRoom] = useState<Room | null>(null);
+  const [joinCode, setJoinCode] = useState('');
+  const [roomError, setRoomError] = useState<string | null>(null);
+  const [roomNotice, setRoomNotice] = useState<string | null>(null);
+  const [isCreateRoomLoading, setIsCreateRoomLoading] = useState(false);
+  const [isJoinRoomLoading, setIsJoinRoomLoading] = useState(false);
+  const [isLeaveRoomLoading, setIsLeaveRoomLoading] = useState(false);
 
   const inviteLink = activeRoom
     ? `${window.location.origin}?room=${activeRoom.code}`
-    : null
+    : null;
 
   useRoomRealtime({
     onRoomChange: handleRoomChange,
     room: activeRoom,
-  })
+  });
 
   useGameRealtime({
     onGameChange: handleGameChange,
     room: activeRoom,
-  })
+  });
 
   useMovesRealtime({
     game: activeGame,
     onMoveCreate: handleMoveCreate,
-  })
+  });
 
   async function handleGoogleSignIn() {
-    setAuthError(null)
-    setIsAuthActionLoading(true)
+    setAuthError(null);
+    setIsAuthActionLoading(true);
 
     try {
-      const { error } = await signInWithGoogle()
+      const { error } = await signInWithGoogle();
 
       if (error) {
-        setAuthError(error.message)
+        setAuthError(error.message);
       }
     } catch (error) {
-      setAuthError(getUnknownErrorMessage(error))
+      setAuthError(getUnknownErrorMessage(error));
     } finally {
-      setIsAuthActionLoading(false)
+      setIsAuthActionLoading(false);
     }
   }
 
   async function handleSignOut() {
-    setAuthError(null)
-    setIsAuthActionLoading(true)
+    setAuthError(null);
+    setIsAuthActionLoading(true);
 
     try {
-      const { error } = await signOut()
+      const { error } = await signOut();
 
       if (error) {
-        setAuthError(error.message)
+        setAuthError(error.message);
       }
     } catch (error) {
-      setAuthError(getUnknownErrorMessage(error))
+      setAuthError(getUnknownErrorMessage(error));
     } finally {
-      setIsAuthActionLoading(false)
+      setIsAuthActionLoading(false);
     }
   }
 
   async function handleCreateRoom() {
     if (!profile) {
-      setRoomError('Profile is not ready yet. Refresh the page and try again.')
-      return
+      setRoomError('Profile is not ready yet. Refresh the page and try again.');
+      return;
     }
 
-    setRoomError(null)
-    setRoomNotice(null)
-    setIsCreateRoomLoading(true)
+    setRoomError(null);
+    setRoomNotice(null);
+    setIsCreateRoomLoading(true);
 
     try {
-      const { data, error } = await createRoom({ hostId: profile.id })
+      const { data, error } = await createRoom({ hostId: profile.id });
 
       if (error) {
-        setRoomError(error.message)
+        setRoomError(error.message);
       } else if (!data) {
-        setRoomError('Room was not created. Try again.')
+        setRoomError('Room was not created. Try again.');
       } else {
-        setActiveRoom(data)
-        persistActiveRoomCode(data.code)
+        setActiveRoom(data);
+        persistActiveRoomCode(data.code);
       }
     } catch (error) {
-      setRoomError(getUnknownErrorMessage(error))
+      setRoomError(getUnknownErrorMessage(error));
     } finally {
-      setIsCreateRoomLoading(false)
+      setIsCreateRoomLoading(false);
     }
   }
 
   async function handleJoinRoom() {
     if (!profile) {
-      setRoomError('Profile is not ready yet. Refresh the page and try again.')
-      return
+      setRoomError('Profile is not ready yet. Refresh the page and try again.');
+      return;
     }
 
-    const normalizedCode = normalizeRoomCode(joinCode)
+    const normalizedCode = normalizeRoomCode(joinCode);
 
     if (normalizedCode.length !== 6) {
-      setRoomError('Enter a 6-character room code.')
-      return
+      setRoomError('Enter a 6-character room code.');
+      return;
     }
 
-    setRoomError(null)
-    setRoomNotice(null)
-    setIsJoinRoomLoading(true)
+    setRoomError(null);
+    setRoomNotice(null);
+    setIsJoinRoomLoading(true);
 
     try {
       const { data, error } = await joinRoom({
         code: normalizedCode,
         guestId: profile.id,
-      })
+      });
 
       if (error) {
-        setRoomError(error.message)
+        setRoomError(error.message);
       } else {
-        setActiveRoom(data)
-        persistActiveRoomCode(data.code)
-        setJoinCode('')
-        await handleHydrateGame(data)
+        setActiveRoom(data);
+        persistActiveRoomCode(data.code);
+        setJoinCode('');
+        await handleHydrateGame(data);
       }
     } catch (error) {
-      setRoomError(getUnknownErrorMessage(error))
+      setRoomError(getUnknownErrorMessage(error));
     } finally {
-      setIsJoinRoomLoading(false)
+      setIsJoinRoomLoading(false);
     }
   }
 
   async function handleLeaveRoom() {
     if (!activeRoom) {
-      return
+      return;
     }
 
-    setRoomError(null)
-    setRoomNotice(null)
-    setIsLeaveRoomLoading(true)
+    setRoomError(null);
+    setRoomNotice(null);
+    setIsLeaveRoomLoading(true);
 
     try {
-      const { error } = await leaveRoom({ roomId: activeRoom.id })
+      const { error } = await leaveRoom({ roomId: activeRoom.id });
 
       if (error) {
-        setRoomError(getFriendlyRoomErrorMessage(error.message))
+        setRoomError(getFriendlyRoomErrorMessage(error.message));
       } else {
-        clearActiveRoomState()
+        clearActiveRoomState();
       }
     } catch (error) {
-      setRoomError(getUnknownErrorMessage(error))
+      setRoomError(getUnknownErrorMessage(error));
     } finally {
-      setIsLeaveRoomLoading(false)
+      setIsLeaveRoomLoading(false);
     }
   }
 
   function clearActiveRoomState() {
-    setActiveRoom(null)
-    setActiveGame(null)
-    setMoves([])
-    persistActiveRoomCode(null)
-    removeRoomCodeFromUrl()
+    setActiveRoom(null);
+    setActiveGame(null);
+    setMoves([]);
+    persistActiveRoomCode(null);
+    removeRoomCodeFromUrl();
   }
 
   function handleRoomChange(room: Room) {
     if (room.status === 'closed') {
-      clearActiveRoomState()
-      setRoomNotice('Your opponent left, so this room is closed. Start a fresh room when you are ready.')
-      return
+      clearActiveRoomState();
+      setRoomNotice(
+        'Your opponent left, so this room is closed. Start a fresh room when you are ready.',
+      );
+      return;
     }
 
-    setActiveRoom(room)
+    setActiveRoom(room);
 
     if (room.status !== 'ready') {
-      setActiveGame(null)
-      setMoves([])
+      setActiveGame(null);
+      setMoves([]);
     }
   }
 
   function handleGameChange(game: Game) {
     setActiveGame((currentGame) => {
       if (currentGame?.id !== game.id) {
-        setMoves([])
+        setMoves([]);
       }
 
-      return game
-    })
+      return game;
+    });
   }
 
   async function handleStartGame() {
     if (!activeRoom) {
-      return
+      return;
     }
 
-    setRoomError(null)
-    setRoomNotice(null)
-    setIsGameActionLoading(true)
+    setRoomError(null);
+    setRoomNotice(null);
+    setIsGameActionLoading(true);
 
     try {
-      const { data, error } = await createGame({ room: activeRoom })
+      const { data, error } = await createGame({ room: activeRoom });
 
       if (error) {
-        setRoomError(error.message)
+        setRoomError(error.message);
       } else {
-        setActiveGame(data)
-        setMoves([])
+        setActiveGame(data);
+        setMoves([]);
       }
     } catch (error) {
-      setRoomError(getUnknownErrorMessage(error))
+      setRoomError(getUnknownErrorMessage(error));
     } finally {
-      setIsGameActionLoading(false)
+      setIsGameActionLoading(false);
     }
   }
 
   async function handleHydrateGame(room: Room) {
     if (room.status !== 'ready') {
-      setActiveGame(null)
-      return
+      setActiveGame(null);
+      return;
     }
 
-    const { data, error } = await getCurrentRoomGame(room.id)
+    const { data, error } = await getCurrentRoomGame(room.id);
 
     if (error) {
-      setRoomError(error.message)
+      setRoomError(error.message);
     } else {
-      setActiveGame(data)
+      setActiveGame(data);
       if (data) {
-        await handleHydrateMoves(data.id)
+        await handleHydrateMoves(data.id);
       } else {
-        setMoves([])
+        setMoves([]);
       }
     }
   }
 
   useEffect(() => {
     if (!profile || activeRoom) {
-      return
+      return;
     }
 
-    const initialRoomCode = getInitialRoomCode()
+    const initialRoomCode = getInitialRoomCode();
 
     if (!initialRoomCode) {
-      return
+      return;
     }
 
-    let isActive = true
+    let isActive = true;
 
-    void getRoomByCode({ code: initialRoomCode.code }).then(async ({ data, error }) => {
-      if (!isActive) {
-        return
-      }
+    void getRoomByCode({ code: initialRoomCode.code }).then(
+      async ({ data, error }) => {
+        if (!isActive) {
+          return;
+        }
 
-      if (error) {
-        setRoomError(error.message)
-      } else if (data) {
-        const isRoomPlayer =
-          profile.id === data.host_id || profile.id === data.guest_id
+        if (error) {
+          setRoomError(error.message);
+        } else if (data) {
+          const isRoomPlayer =
+            profile.id === data.host_id || profile.id === data.guest_id;
 
-        if (isRoomPlayer) {
-          setActiveRoom(data)
-          persistActiveRoomCode(data.code)
-          await handleHydrateGame(data)
-        } else if (
-          initialRoomCode.source === 'url' &&
-          data.status === 'waiting'
-        ) {
-          const joinResult = await joinRoom({
-            code: data.code,
-            guestId: profile.id,
-          })
+          if (isRoomPlayer) {
+            setActiveRoom(data);
+            persistActiveRoomCode(data.code);
+            await handleHydrateGame(data);
+          } else if (
+            initialRoomCode.source === 'url' &&
+            data.status === 'waiting'
+          ) {
+            const joinResult = await joinRoom({
+              code: data.code,
+              guestId: profile.id,
+            });
 
-          if (joinResult.error) {
-            setRoomError(joinResult.error.message)
+            if (joinResult.error) {
+              setRoomError(joinResult.error.message);
+            } else {
+              setActiveRoom(joinResult.data);
+              persistActiveRoomCode(joinResult.data.code);
+              await handleHydrateGame(joinResult.data);
+            }
           } else {
-            setActiveRoom(joinResult.data)
-            persistActiveRoomCode(joinResult.data.code)
-            await handleHydrateGame(joinResult.data)
+            setRoomError('This room is not available for your account.');
+            persistActiveRoomCode(null);
           }
         } else {
-          setRoomError('This room is not available for your account.')
-          persistActiveRoomCode(null)
+          persistActiveRoomCode(null);
         }
-      } else {
-        persistActiveRoomCode(null)
-      }
-    })
+      },
+    );
 
     return () => {
-      isActive = false
-    }
-  }, [activeRoom, profile])
+      isActive = false;
+    };
+  }, [activeRoom, profile]);
 
   async function handleHydrateMoves(gameId: string) {
-    const { data, error } = await getMoves(gameId)
+    const { data, error } = await getMoves(gameId);
 
     if (error) {
-      setRoomError(error.message)
+      setRoomError(error.message);
     } else {
-      setMoves(data ?? [])
+      setMoves(data ?? []);
     }
   }
 
   function handleMoveCreate(move: Move) {
     setMoves((currentMoves) => {
       if (currentMoves.some((currentMove) => currentMove.id === move.id)) {
-        return currentMoves
+        return currentMoves;
       }
 
       return [...currentMoves, move].sort(
-        (firstMove, secondMove) => firstMove.move_number - secondMove.move_number,
-      )
-    })
+        (firstMove, secondMove) =>
+          firstMove.move_number - secondMove.move_number,
+      );
+    });
   }
 
   async function handleCreateMove(cellIndex: number) {
     if (!activeGame || !profile || isMoveActionLoading) {
-      return
+      return;
     }
 
-    setRoomError(null)
-    setRoomNotice(null)
-    setIsMoveActionLoading(true)
+    setRoomError(null);
+    setRoomNotice(null);
+    setIsMoveActionLoading(true);
 
     try {
       const { data, error } = await createMove({
         cellIndex,
         gameId: activeGame.id,
-      })
+      });
 
       if (error) {
-        setRoomError(error.message)
+        setRoomError(error.message);
       } else {
-        handleMoveCreate(data)
-        await handleHydrateCurrentGame(activeGame.id)
+        handleMoveCreate(data);
+        await handleHydrateCurrentGame(activeGame.id);
       }
     } catch (error) {
-      setRoomError(getUnknownErrorMessage(error))
+      setRoomError(getUnknownErrorMessage(error));
     } finally {
-      setIsMoveActionLoading(false)
+      setIsMoveActionLoading(false);
     }
   }
 
   async function handleHydrateCurrentGame(gameId: string) {
-    const { data, error } = await getGame(gameId)
+    const { data, error } = await getGame(gameId);
 
     if (error) {
-      setRoomError(error.message)
+      setRoomError(error.message);
     } else {
-      handleGameChange(data)
+      handleGameChange(data);
     }
   }
 
@@ -394,7 +399,7 @@ function App() {
         lead="The app is checking whether a Supabase session already exists in this browser."
         title="Loading session"
       />
-    )
+    );
   }
 
   if (!user) {
@@ -404,7 +409,7 @@ function App() {
         isAuthActionLoading={isAuthActionLoading}
         onGoogleSignIn={handleGoogleSignIn}
       />
-    )
+    );
   }
 
   return (
@@ -434,60 +439,60 @@ function App() {
       roomNotice={roomNotice}
       userEmail={user.email ?? null}
     />
-  )
+  );
 }
 
 function getInitialRoomCode(): InitialRoomCode | null {
-  const urlRoomCode = new URLSearchParams(window.location.search).get('room')
+  const urlRoomCode = new URLSearchParams(window.location.search).get('room');
 
   if (urlRoomCode) {
     return {
       code: normalizeRoomCode(urlRoomCode),
       source: 'url',
-    }
+    };
   }
 
-  const storedRoomCode = localStorage.getItem(ACTIVE_ROOM_CODE_STORAGE_KEY)
+  const storedRoomCode = localStorage.getItem(ACTIVE_ROOM_CODE_STORAGE_KEY);
 
   if (!storedRoomCode) {
-    return null
+    return null;
   }
 
   return {
     code: storedRoomCode,
     source: 'storage',
-  }
+  };
 }
 
 function persistActiveRoomCode(code: string | null) {
   if (code) {
-    localStorage.setItem(ACTIVE_ROOM_CODE_STORAGE_KEY, code)
+    localStorage.setItem(ACTIVE_ROOM_CODE_STORAGE_KEY, code);
   } else {
-    localStorage.removeItem(ACTIVE_ROOM_CODE_STORAGE_KEY)
+    localStorage.removeItem(ACTIVE_ROOM_CODE_STORAGE_KEY);
   }
 }
 
 function removeRoomCodeFromUrl() {
-  const url = new URL(window.location.href)
+  const url = new URL(window.location.href);
 
   if (!url.searchParams.has('room')) {
-    return
+    return;
   }
 
-  url.searchParams.delete('room')
-  window.history.replaceState({}, '', url)
+  url.searchParams.delete('room');
+  window.history.replaceState({}, '', url);
 }
 
 function getUnknownErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : 'Unexpected action failure.'
+  return error instanceof Error ? error.message : 'Unexpected action failure.';
 }
 
 function getFriendlyRoomErrorMessage(message: string) {
   if (message === 'The room was closed.' || message === 'Room was closed.') {
-    return 'The room has already been closed. You can start a fresh one from the lobby.'
+    return 'The room has already been closed. You can start a fresh one from the lobby.';
   }
 
-  return message
+  return message;
 }
 
-export default App
+export default App;

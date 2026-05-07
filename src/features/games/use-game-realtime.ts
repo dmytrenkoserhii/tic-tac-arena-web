@@ -1,20 +1,20 @@
-import { useEffect, useEffectEvent } from 'react'
+import { useEffect, useEffectEvent } from 'react';
 
-import { supabase } from '../../lib/supabase'
-import type { Game } from '../../types/games'
-import type { Room } from '../../types/rooms'
+import { supabase } from '../../lib/supabase';
+import type { Game } from '../../types/games';
+import type { Room } from '../../types/rooms';
 
 type UseGameRealtimeInput = {
-  onGameChange: (game: Game) => void
-  room: Room | null
-}
+  onGameChange: (game: Game) => void;
+  room: Room | null;
+};
 
 export function useGameRealtime({ onGameChange, room }: UseGameRealtimeInput) {
-  const handleGameChange = useEffectEvent(onGameChange)
+  const handleGameChange = useEffectEvent(onGameChange);
 
   useEffect(() => {
     if (!room) {
-      return
+      return;
     }
 
     const channel = supabase
@@ -28,7 +28,7 @@ export function useGameRealtime({ onGameChange, room }: UseGameRealtimeInput) {
           table: 'games',
         },
         (payload) => {
-          handleGameChange(payload.new as Game)
+          handleGameChange(payload.new as Game);
         },
       )
       .on(
@@ -40,13 +40,13 @@ export function useGameRealtime({ onGameChange, room }: UseGameRealtimeInput) {
           table: 'games',
         },
         (payload) => {
-          handleGameChange(payload.new as Game)
+          handleGameChange(payload.new as Game);
         },
       )
-      .subscribe()
+      .subscribe();
 
     return () => {
-      void supabase.removeChannel(channel)
-    }
-  }, [room])
+      void supabase.removeChannel(channel);
+    };
+  }, [room]);
 }

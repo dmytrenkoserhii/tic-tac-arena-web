@@ -1,15 +1,15 @@
-import { Button, Group, Paper, Stack, Text, TextInput } from '@mantine/core'
-import type { FormEvent } from 'react'
+import { Button, Group, Paper, Stack, Text, TextInput } from '@mantine/core';
+import type { FormEvent } from 'react';
 
-import classes from '../../App.module.css'
+import classes from '../../App.module.css';
 
 type JoinRoomFormProps = {
-  isDisabled: boolean
-  isLoading: boolean
-  joinCode: string
-  onJoin: () => void
-  onJoinCodeChange: (value: string) => void
-}
+  isDisabled: boolean;
+  isLoading: boolean;
+  joinCode: string;
+  onJoin: () => void;
+  onJoinCodeChange: (value: string) => void;
+};
 
 export function JoinRoomForm({
   isDisabled,
@@ -18,13 +18,13 @@ export function JoinRoomForm({
   onJoin,
   onJoinCodeChange,
 }: JoinRoomFormProps) {
-  const isJoinDisabled = isDisabled || joinCode.length !== 6
+  const isJoinDisabled = isDisabled || joinCode.length !== 6;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     if (!isJoinDisabled) {
-      onJoin()
+      onJoin();
     }
   }
 
@@ -60,5 +60,5 @@ export function JoinRoomForm({
         </Group>
       </Stack>
     </Paper>
-  )
+  );
 }

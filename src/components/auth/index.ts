@@ -1,1 +1,1 @@
-export { SignInScreen } from './sign-in-screen'
+export { SignInScreen } from './sign-in-screen';
