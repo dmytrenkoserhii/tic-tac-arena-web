@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 
 import { signInWithGoogle, signOut } from './features/auth/auth-actions';
 import { useAuth } from './features/auth/use-auth';
@@ -271,6 +271,8 @@ function App() {
     }
   }
 
+  const hydrateGameFromInitialRoom = useEffectEvent(handleHydrateGame);
+
   useEffect(() => {
     if (!profile || activeRoom) {
       return;
@@ -299,7 +301,7 @@ function App() {
           if (isRoomPlayer) {
             setActiveRoom(data);
             persistActiveRoomCode(data.code);
-            await handleHydrateGame(data);
+            await hydrateGameFromInitialRoom(data);
           } else if (
             initialRoomCode.source === 'url' &&
             data.status === 'waiting'
@@ -314,7 +316,7 @@ function App() {
             } else {
               setActiveRoom(joinResult.data);
               persistActiveRoomCode(joinResult.data.code);
-              await handleHydrateGame(joinResult.data);
+              await hydrateGameFromInitialRoom(joinResult.data);
             }
           } else {
             setRoomError('This room is not available for your account.');
