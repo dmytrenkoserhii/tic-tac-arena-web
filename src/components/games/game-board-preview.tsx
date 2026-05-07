@@ -1,4 +1,4 @@
-import { Button, Paper, SimpleGrid, Stack, Text } from '@mantine/core';
+import { Badge, Button, Paper, SimpleGrid, Stack, Text } from '@mantine/core';
 
 import type { Game, Move } from '../../types/games';
 import type { Profile } from '../../types/profile';
@@ -34,7 +34,7 @@ export function GameBoardPreview({
   }
 
   const isHost = profile?.id === room.host_id;
-  const { board, isGameFinished, isPlayerTurn, statusMessage } =
+  const { board, isGameFinished, isPlayerTurn, result, statusMessage } =
     getGameViewState({
       game,
       moves,
@@ -47,6 +47,7 @@ export function GameBoardPreview({
         <Text className={classes.statusLabel} size="xs" tt="uppercase">
           Game board
         </Text>
+        {result ? <RoundResultSignal result={result} /> : null}
         <SimpleGrid className={classes.boardGrid} cols={3} spacing="xs">
           {CELLS.map((cell) => {
             const cellMark = board.get(cell);
@@ -105,6 +106,37 @@ export function GameBoardPreview({
         )}
       </Stack>
     </Paper>
+  );
+}
+
+type RoundResultSignalProps = {
+  result: 'draw' | 'loss' | 'win';
+};
+
+function RoundResultSignal({ result }: RoundResultSignalProps) {
+  const resultCopy = {
+    draw: {
+      label: 'Draw',
+      message: 'The arena is locked. Nobody owns the grid.',
+    },
+    loss: {
+      label: 'Defeat',
+      message: 'Your opponent claimed this round.',
+    },
+    win: {
+      label: 'Victory',
+      message: 'You controlled the grid.',
+    },
+  }[result];
+
+  return (
+    <div className={classes.resultSignal} data-result={result}>
+      <Badge className={classes.resultBadge} variant="light">
+        Round complete
+      </Badge>
+      <Text className={classes.resultTitle}>{resultCopy.label}</Text>
+      <Text className={classes.resultMessage}>{resultCopy.message}</Text>
+    </div>
   );
 }
 

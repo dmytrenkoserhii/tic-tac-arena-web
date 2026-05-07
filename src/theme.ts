@@ -2,10 +2,10 @@ import { createTheme } from '@mantine/core';
 
 export const theme = createTheme({
   primaryColor: 'cyan',
-  defaultRadius: 'md',
-  fontFamily: '"Segoe UI", "Helvetica Neue", Arial, sans-serif',
+  defaultRadius: 'lg',
+  fontFamily: '"Space Grotesk", "Trebuchet MS", "Segoe UI", sans-serif',
   headings: {
-    fontFamily: '"Segoe UI", "Helvetica Neue", Arial, sans-serif',
-    fontWeight: '800',
+    fontFamily: '"Space Grotesk", "Trebuchet MS", "Segoe UI", sans-serif',
+    fontWeight: '900',
   },
 });

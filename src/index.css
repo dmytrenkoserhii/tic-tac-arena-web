@@ -1,7 +1,17 @@
 :root {
+  color: #f8fafc;
   background:
-    radial-gradient(circle at top, rgba(14, 165, 233, 0.2), transparent 38%),
-    linear-gradient(180deg, #08111f 0%, #101827 55%, #172033 100%);
+    radial-gradient(
+      circle at 12% 12%,
+      rgba(34, 211, 238, 0.2),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 88% 18%,
+      rgba(251, 191, 36, 0.16),
+      transparent 30%
+    ),
+    linear-gradient(180deg, #06101d 0%, #0c1423 48%, #121827 100%);
 }
 
 * {
@@ -12,9 +22,27 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  color: #f8fafc;
   background:
-    radial-gradient(circle at top, rgba(14, 165, 233, 0.2), transparent 38%),
-    linear-gradient(180deg, #08111f 0%, #101827 55%, #172033 100%);
+    linear-gradient(rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+    radial-gradient(
+      circle at 12% 12%,
+      rgba(34, 211, 238, 0.2),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 88% 18%,
+      rgba(251, 191, 36, 0.16),
+      transparent 30%
+    ),
+    linear-gradient(180deg, #06101d 0%, #0c1423 48%, #121827 100%);
+  background-size:
+    42px 42px,
+    42px 42px,
+    auto,
+    auto,
+    auto;
 }
 
 #root {

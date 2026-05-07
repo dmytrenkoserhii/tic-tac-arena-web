@@ -1,6 +1,7 @@
 import type { Game, Move } from '../../types/games';
 
 export type GameMark = 'x' | 'o';
+export type RoundResult = 'draw' | 'loss' | 'win';
 
 type GetGameStatusMessageInput = {
   game: Game | null;
@@ -57,8 +58,24 @@ export function getGameViewState({
     isPlayerTurn,
     nextMark,
     playerMark,
+    result: getRoundResult({ game, profileId }),
     statusMessage,
   };
+}
+
+export function getRoundResult({
+  game,
+  profileId,
+}: Pick<GetGameViewStateInput, 'game' | 'profileId'>): RoundResult | null {
+  if (!game || game.status === 'in_progress') {
+    return null;
+  }
+
+  if (game.status === 'draw') {
+    return 'draw';
+  }
+
+  return game.winner_id === profileId ? 'win' : 'loss';
 }
 
 export function getGameStatusMessage({

@@ -58,6 +58,7 @@ describe('game-state', () => {
 
     expect(viewState.isGameFinished).toBe(false);
     expect(viewState.isPlayerTurn).toBe(true);
+    expect(viewState.result).toBeNull();
     expect(viewState.statusMessage).toBe('Your turn. Place X.');
   });
 
@@ -74,6 +75,7 @@ describe('game-state', () => {
 
     expect(viewState.isGameFinished).toBe(true);
     expect(viewState.isPlayerTurn).toBe(false);
+    expect(viewState.result).toBe('win');
     expect(viewState.statusMessage).toBe(
       'Round complete. X won. You won this round.',
     );
@@ -90,6 +92,7 @@ describe('game-state', () => {
       profileId: O_PLAYER_ID,
     });
 
+    expect(viewState.result).toBe('loss');
     expect(viewState.statusMessage).toBe(
       'Round complete. X won. Your opponent won this round.',
     );
@@ -106,6 +109,7 @@ describe('game-state', () => {
     });
 
     expect(viewState.isGameFinished).toBe(true);
+    expect(viewState.result).toBe('draw');
     expect(viewState.statusMessage).toBe('Round complete. It is a draw.');
   });
 });

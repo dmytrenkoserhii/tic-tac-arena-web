@@ -26,7 +26,7 @@ export function StatusShell({
 }: StatusShellProps) {
   return (
     <Box component="main" className={classes.appShell}>
-      <Container size="md">
+      <Container size="lg">
         <Paper
           className={classes.statusCard}
           p={{ base: 'md', sm: 'xl' }}

@@ -20,8 +20,9 @@ import {
 } from './features/rooms/room-api';
 import { useRoomRealtime } from './features/rooms/use-room-realtime';
 import { SignInScreen } from './components/auth';
+import { GameScreen } from './components/games';
 import { StatusShell } from './components/layout';
-import { LobbyScreen } from './components/rooms';
+import { HomeScreen, RoomScreen } from './components/rooms';
 import type { Game, Move } from './types/games';
 import type { Room } from './types/rooms';
 
@@ -31,6 +32,8 @@ type InitialRoomCode = {
   code: string;
   source: 'storage' | 'url';
 };
+
+type AppView = 'game' | 'home' | 'room';
 
 function App() {
   const { isLoading, profile, profileError, user } = useAuth();
@@ -47,6 +50,7 @@ function App() {
   const [isCreateRoomLoading, setIsCreateRoomLoading] = useState(false);
   const [isJoinRoomLoading, setIsJoinRoomLoading] = useState(false);
   const [isLeaveRoomLoading, setIsLeaveRoomLoading] = useState(false);
+  const [currentView, setCurrentView] = useState<AppView>('home');
 
   const inviteLink = activeRoom
     ? `${window.location.origin}?room=${activeRoom.code}`
@@ -121,6 +125,7 @@ function App() {
       } else {
         setActiveRoom(data);
         persistActiveRoomCode(data.code);
+        setCurrentView('room');
       }
     } catch (error) {
       setRoomError(getUnknownErrorMessage(error));
@@ -197,6 +202,7 @@ function App() {
     setMoves([]);
     persistActiveRoomCode(null);
     removeRoomCodeFromUrl();
+    setCurrentView('home');
   }
 
   function handleRoomChange(room: Room) {
@@ -213,6 +219,7 @@ function App() {
     if (room.status !== 'ready') {
       setActiveGame(null);
       setMoves([]);
+      setCurrentView('room');
     }
   }
 
@@ -224,6 +231,7 @@ function App() {
 
       return game;
     });
+    setCurrentView('game');
   }
 
   async function handleStartGame() {
@@ -243,6 +251,7 @@ function App() {
       } else {
         setActiveGame(data);
         setMoves([]);
+        setCurrentView('game');
       }
     } catch (error) {
       setRoomError(getUnknownErrorMessage(error));
@@ -265,8 +274,10 @@ function App() {
       setActiveGame(data);
       if (data) {
         await handleHydrateMoves(data.id);
+        setCurrentView('game');
       } else {
         setMoves([]);
+        setCurrentView('room');
       }
     }
   }
@@ -415,32 +426,54 @@ function App() {
   }
 
   return (
-    <LobbyScreen
-      activeRoom={activeRoom}
-      authError={authError}
-      game={activeGame}
-      inviteLink={inviteLink}
-      isAuthActionLoading={isAuthActionLoading}
-      isCreateRoomLoading={isCreateRoomLoading}
-      isGameActionLoading={isGameActionLoading}
-      isJoinRoomLoading={isJoinRoomLoading}
-      isLeaveRoomLoading={isLeaveRoomLoading}
-      isMoveActionLoading={isMoveActionLoading}
-      joinCode={joinCode}
-      moves={moves}
-      onBackToLobby={handleLeaveRoom}
-      onCellClick={handleCreateMove}
-      onCreateRoom={handleCreateRoom}
-      onJoinCodeChange={(value) => setJoinCode(normalizeRoomCode(value))}
-      onJoinRoom={handleJoinRoom}
-      onSignOut={handleSignOut}
-      onStartGame={handleStartGame}
-      profile={profile}
-      profileError={profileError}
-      roomError={roomError}
-      roomNotice={roomNotice}
-      userEmail={user.email ?? null}
-    />
+    <>
+      {!activeRoom ? (
+        <HomeScreen
+          authError={authError}
+          isAuthActionLoading={isAuthActionLoading}
+          isCreateRoomLoading={isCreateRoomLoading}
+          isJoinRoomLoading={isJoinRoomLoading}
+          joinCode={joinCode}
+          onCreateRoom={handleCreateRoom}
+          onJoinCodeChange={(value) => setJoinCode(normalizeRoomCode(value))}
+          onJoinRoom={handleJoinRoom}
+          onSignOut={handleSignOut}
+          profile={profile}
+          profileError={profileError}
+          roomError={roomError}
+          roomNotice={roomNotice}
+          userEmail={user.email ?? null}
+        />
+      ) : currentView === 'game' ? (
+        <GameScreen
+          game={activeGame}
+          isGameActionLoading={isGameActionLoading}
+          isLeaveRoomLoading={isLeaveRoomLoading}
+          isMoveActionLoading={isMoveActionLoading}
+          moves={moves}
+          onCellClick={handleCreateMove}
+          onLeaveRoom={handleLeaveRoom}
+          onRoomDetails={() => setCurrentView('room')}
+          onStartGame={handleStartGame}
+          profile={profile}
+          room={activeRoom}
+          roomError={roomError}
+          roomNotice={roomNotice}
+        />
+      ) : (
+        <RoomScreen
+          inviteLink={inviteLink}
+          isGameActionLoading={isGameActionLoading}
+          isLeaveRoomLoading={isLeaveRoomLoading}
+          onLeaveRoom={handleLeaveRoom}
+          onStartGame={handleStartGame}
+          profile={profile}
+          room={activeRoom}
+          roomError={roomError}
+          roomNotice={roomNotice}
+        />
+      )}
+    </>
   );
 }
 
