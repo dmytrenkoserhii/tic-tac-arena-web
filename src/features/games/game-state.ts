@@ -3,6 +3,17 @@ import type { Game, Move } from '../../types/games';
 export type GameMark = 'x' | 'o';
 export type RoundResult = 'draw' | 'loss' | 'win';
 
+const WINNING_LINES = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6],
+] as const;
+
 type GetGameStatusMessageInput = {
   game: Game | null;
   isPlayerTurn: boolean;
@@ -60,6 +71,7 @@ export function getGameViewState({
     playerMark,
     result: getRoundResult({ game, profileId }),
     statusMessage,
+    winningCells: getWinningCells(board),
   };
 }
 
@@ -76,6 +88,22 @@ export function getRoundResult({
   }
 
   return game.winner_id === profileId ? 'win' : 'loss';
+}
+
+export function getWinningCells(board: Map<number, GameMark>) {
+  const winningLine = WINNING_LINES.find(
+    ([firstCell, secondCell, thirdCell]) => {
+      const firstMark = board.get(firstCell);
+
+      return (
+        firstMark &&
+        firstMark === board.get(secondCell) &&
+        firstMark === board.get(thirdCell)
+      );
+    },
+  );
+
+  return winningLine ? new Set<number>(winningLine) : new Set<number>();
 }
 
 export function getGameStatusMessage({

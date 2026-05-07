@@ -34,12 +34,18 @@ export function GameBoardPreview({
   }
 
   const isHost = profile?.id === room.host_id;
-  const { board, isGameFinished, isPlayerTurn, result, statusMessage } =
-    getGameViewState({
-      game,
-      moves,
-      profileId: profile?.id ?? null,
-    });
+  const {
+    board,
+    isGameFinished,
+    isPlayerTurn,
+    result,
+    statusMessage,
+    winningCells,
+  } = getGameViewState({
+    game,
+    moves,
+    profileId: profile?.id ?? null,
+  });
 
   return (
     <Paper
@@ -61,6 +67,7 @@ export function GameBoardPreview({
                 aria-label={getCellLabel({ cell, mark: cellMark })}
                 className={classes.boardCell}
                 data-mark={cellMark}
+                data-winning={winningCells.has(cell) ? 'true' : undefined}
                 disabled={
                   !game ||
                   isGameFinished ||
@@ -140,6 +147,13 @@ function RoundResultSignal({ result }: RoundResultSignalProps) {
       </Badge>
       <Text className={classes.resultTitle}>{resultCopy.label}</Text>
       <Text className={classes.resultMessage}>{resultCopy.message}</Text>
+      <Text className={classes.resultCallout}>
+        {result === 'win'
+          ? 'Next round is yours to command.'
+          : result === 'loss'
+            ? 'Reset, adapt, and challenge the grid again.'
+            : 'No winner. Pure deadlock.'}
+      </Text>
     </div>
   );
 }

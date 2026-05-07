@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { getBoard, getGameViewState, getNextMark } from './game-state';
+import {
+  getBoard,
+  getGameViewState,
+  getNextMark,
+  getWinningCells,
+} from './game-state';
 import type { Game, Move } from '../../types/games';
 
 const X_PLAYER_ID = 'x-player';
@@ -47,6 +52,42 @@ describe('game-state', () => {
   it('alternates the next mark from move count', () => {
     expect(getNextMark([])).toBe('x');
     expect(getNextMark([createMove({})])).toBe('o');
+  });
+
+  it('detects winning rows', () => {
+    const winningCells = getWinningCells(
+      getBoard([
+        createMove({ cell_index: 0, mark: 'x' }),
+        createMove({ cell_index: 1, mark: 'x' }),
+        createMove({ cell_index: 2, mark: 'x' }),
+      ]),
+    );
+
+    expect([...winningCells]).toEqual([0, 1, 2]);
+  });
+
+  it('detects winning columns', () => {
+    const winningCells = getWinningCells(
+      getBoard([
+        createMove({ cell_index: 1, mark: 'o' }),
+        createMove({ cell_index: 4, mark: 'o' }),
+        createMove({ cell_index: 7, mark: 'o' }),
+      ]),
+    );
+
+    expect([...winningCells]).toEqual([1, 4, 7]);
+  });
+
+  it('detects winning diagonals', () => {
+    const winningCells = getWinningCells(
+      getBoard([
+        createMove({ cell_index: 2, mark: 'x' }),
+        createMove({ cell_index: 4, mark: 'x' }),
+        createMove({ cell_index: 6, mark: 'x' }),
+      ]),
+    );
+
+    expect([...winningCells]).toEqual([2, 4, 6]);
   });
 
   it('marks the current player turn while the game is active', () => {
