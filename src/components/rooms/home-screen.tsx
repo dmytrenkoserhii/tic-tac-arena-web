@@ -1,4 +1,13 @@
-import { Alert, Button, Group, SimpleGrid, Stack } from '@mantine/core';
+import {
+  Alert,
+  Badge,
+  Button,
+  Group,
+  Paper,
+  SimpleGrid,
+  Stack,
+  Text,
+} from '@mantine/core';
 
 import { StatusShell } from '../layout';
 import { StatusItem } from '../ui';
@@ -46,17 +55,6 @@ export function HomeScreen({
       title={`Welcome back${profile?.display_name ? `, ${profile.display_name}` : ''}`}
     >
       <Stack gap="lg">
-        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-          <StatusItem
-            label="Signed in as"
-            value={profile?.email ?? userEmail ?? 'Authenticated player'}
-          />
-          <StatusItem
-            label="Profile"
-            value={profile ? 'Ready to play' : 'Setting up player profile'}
-          />
-        </SimpleGrid>
-
         {profileError ? (
           <Alert
             color="yellow"
@@ -85,32 +83,84 @@ export function HomeScreen({
           </Alert>
         ) : null}
 
-        <JoinRoomForm
-          isDisabled={!profile}
-          isLoading={isJoinRoomLoading}
-          joinCode={joinCode}
-          onJoin={onJoinRoom}
-          onJoinCodeChange={onJoinCodeChange}
-        />
+        <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
+          <Paper className={classes.homeProfileCard} p="lg" radius="lg">
+            <Stack gap="lg">
+              <Group justify="space-between" align="flex-start">
+                <Stack gap={4}>
+                  <Text
+                    className={classes.statusLabel}
+                    size="xs"
+                    tt="uppercase"
+                  >
+                    Player profile
+                  </Text>
+                  <Text className={classes.homePlayerName}>
+                    {profile?.display_name ?? 'Arena player'}
+                  </Text>
+                </Stack>
+                <Badge color={profile ? 'cyan' : 'yellow'} variant="light">
+                  {profile ? 'Online' : 'Syncing'}
+                </Badge>
+              </Group>
 
-        <Group className={classes.roomActions}>
-          <Button
-            className={classes.primaryAction}
-            disabled={!profile}
-            loading={isCreateRoomLoading}
-            onClick={onCreateRoom}
-          >
-            Create room
-          </Button>
-          <Button
-            className={classes.primaryAction}
-            loading={isAuthActionLoading}
-            onClick={onSignOut}
-            variant="light"
-          >
-            Sign out
-          </Button>
-        </Group>
+              <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+                <StatusItem
+                  label="Signed in as"
+                  value={profile?.email ?? userEmail ?? 'Authenticated player'}
+                />
+                <StatusItem
+                  label="Profile"
+                  value={
+                    profile ? 'Ready to play' : 'Setting up player profile'
+                  }
+                />
+              </SimpleGrid>
+
+              <Button
+                className={classes.responsiveAction}
+                loading={isAuthActionLoading}
+                onClick={onSignOut}
+                variant="subtle"
+              >
+                Sign out
+              </Button>
+            </Stack>
+          </Paper>
+
+          <Stack gap="lg">
+            <Paper className={classes.createRoomCard} p="lg" radius="lg">
+              <Stack gap="md">
+                <Text className={classes.statusLabel} size="xs" tt="uppercase">
+                  Host a match
+                </Text>
+                <Text className={classes.homeActionTitle}>
+                  Open a private arena
+                </Text>
+                <Text className={classes.lead}>
+                  Create a room, copy the invite code, and wait for your
+                  opponent to connect.
+                </Text>
+                <Button
+                  className={classes.primaryAction}
+                  disabled={!profile}
+                  loading={isCreateRoomLoading}
+                  onClick={onCreateRoom}
+                >
+                  Create room
+                </Button>
+              </Stack>
+            </Paper>
+
+            <JoinRoomForm
+              isDisabled={!profile}
+              isLoading={isJoinRoomLoading}
+              joinCode={joinCode}
+              onJoin={onJoinRoom}
+              onJoinCodeChange={onJoinCodeChange}
+            />
+          </Stack>
+        </SimpleGrid>
       </Stack>
     </StatusShell>
   );

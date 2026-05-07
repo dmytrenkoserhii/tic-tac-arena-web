@@ -30,7 +30,7 @@ export function JoinRoomForm({
 
   return (
     <Paper
-      className={classes.roomCard}
+      className={classes.joinRoomCard}
       component="form"
       onSubmit={handleSubmit}
       p="md"
@@ -38,8 +38,9 @@ export function JoinRoomForm({
     >
       <Stack gap="md">
         <Text className={classes.statusLabel} size="xs" tt="uppercase">
-          Join room
+          Join a match
         </Text>
+        <Text className={classes.homeActionTitle}>Enter an invite code</Text>
         <Group align="flex-end" className={classes.joinRoomActions}>
           <TextInput
             className={classes.roomInput}
