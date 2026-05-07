@@ -42,10 +42,14 @@ export function GameBoardPreview({
     });
 
   return (
-    <Paper className={classes.roomCard} p="md" radius="md">
-      <Stack gap="md">
+    <Paper
+      className={classes.arenaBoardCard}
+      p={{ base: 'md', sm: 'xl' }}
+      radius="lg"
+    >
+      <Stack gap="lg">
         <Text className={classes.statusLabel} size="xs" tt="uppercase">
-          Game board
+          Command grid
         </Text>
         {result ? <RoundResultSignal result={result} /> : null}
         <SimpleGrid className={classes.boardGrid} cols={3} spacing="xs">
@@ -74,11 +78,11 @@ export function GameBoardPreview({
           })}
         </SimpleGrid>
         {game ? (
-          <Stack gap="sm" align="flex-start">
-            <Text className={classes.statusValue}>{statusMessage}</Text>
+          <Stack className={classes.turnConsole} gap="sm" align="center">
+            <Text className={classes.turnSignal}>{statusMessage}</Text>
             {isGameFinished && profile && isHost ? (
               <Button
-                className={classes.responsiveAction}
+                className={classes.primaryAction}
                 loading={isLoading}
                 onClick={onStartGame}
               >
@@ -87,15 +91,15 @@ export function GameBoardPreview({
             ) : null}
           </Stack>
         ) : (
-          <Stack gap="sm" align="flex-start">
-            <Text className={classes.statusValue}>
+          <Stack className={classes.turnConsole} gap="sm" align="center">
+            <Text className={classes.turnSignal}>
               {profile && isHost
                 ? 'Start the first game when both players are ready.'
                 : 'Waiting for the host to start the game.'}
             </Text>
             {profile && isHost ? (
               <Button
-                className={classes.responsiveAction}
+                className={classes.primaryAction}
                 loading={isLoading}
                 onClick={onStartGame}
               >

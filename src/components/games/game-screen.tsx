@@ -1,7 +1,17 @@
-import { Alert, Button, Group, Stack } from '@mantine/core';
+import {
+  Alert,
+  Badge,
+  Button,
+  Group,
+  SimpleGrid,
+  Stack,
+  Text,
+} from '@mantine/core';
 
 import { StatusShell } from '../layout';
+import { StatusItem } from '../ui';
 import { GameBoardPreview } from './game-board-preview';
+import { getGameViewState } from '../../features/games/game-state';
 import type { Game, Move } from '../../types/games';
 import type { Profile } from '../../types/profile';
 import type { Room } from '../../types/rooms';
@@ -38,13 +48,25 @@ export function GameScreen({
   roomError,
   roomNotice,
 }: GameScreenProps) {
+  const isHost = profile?.id === room.host_id;
+  const playerRole = isHost ? 'Host' : 'Guest';
+  const playerMark = game
+    ? getGameViewState({
+        game,
+        moves,
+        profileId: profile?.id ?? null,
+      }).playerMark.toUpperCase()
+    : isHost
+      ? 'X'
+      : 'O';
+
   return (
     <StatusShell
       eyebrow={`Room ${room.code}`}
-      lead="The board is live. Keep your eyes on the grid and wait for the arena signal."
+      lead="The match has moved into the arena. Watch the turn signal, claim the grid, and keep the room controls close."
       title="Arena"
     >
-      <Stack gap="lg">
+      <Stack className={classes.gameArena} gap="lg">
         {roomError ? (
           <Alert color="red" radius="md" title="Move needs attention">
             {roomError}
@@ -57,6 +79,30 @@ export function GameScreen({
           </Alert>
         ) : null}
 
+        <div className={classes.arenaTopBar}>
+          <Stack gap={4}>
+            <Text className={classes.statusLabel} size="xs" tt="uppercase">
+              Live match
+            </Text>
+            <Group gap="xs">
+              <Badge variant="light">Room {room.code}</Badge>
+              <Badge
+                color={playerMark === 'X' ? 'cyan' : 'yellow'}
+                variant="light"
+              >
+                You are {playerMark}
+              </Badge>
+            </Group>
+          </Stack>
+          <SimpleGrid className={classes.arenaStats} cols={{ base: 1, sm: 2 }}>
+            <StatusItem label="Your role" value={playerRole} />
+            <StatusItem
+              label="Round"
+              value={game ? game.status.replaceAll('_', ' ') : 'Waiting'}
+            />
+          </SimpleGrid>
+        </div>
+
         <GameBoardPreview
           game={game}
           isLoading={isGameActionLoading}
@@ -68,7 +114,7 @@ export function GameScreen({
           room={room}
         />
 
-        <Group className={classes.roomActions}>
+        <Group className={classes.arenaActions}>
           <Button
             className={classes.responsiveAction}
             onClick={onRoomDetails}
