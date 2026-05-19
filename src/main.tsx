@@ -5,15 +5,20 @@ import '@mantine/core/styles.css';
 import './index.css';
 import App from './App.tsx';
 import { AuthProvider } from './features/auth/auth-provider.tsx';
+import { Sentry } from './lib/sentry.ts';
 import './lib/supabase';
 import { theme } from './theme';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <MantineProvider defaultColorScheme="dark" theme={theme}>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <Sentry.ErrorBoundary
+        fallback={<p>Something went wrong. Refresh the page and try again.</p>}
+      >
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </Sentry.ErrorBoundary>
     </MantineProvider>
   </StrictMode>,
 );
