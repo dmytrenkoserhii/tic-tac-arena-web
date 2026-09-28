@@ -154,7 +154,6 @@ function App() {
     try {
       const { data, error } = await joinRoom({
         code: normalizedCode,
-        guestId: profile.id,
       });
 
       if (error) {
@@ -305,33 +304,24 @@ function App() {
 
         if (error) {
           setRoomError(error.message);
-        } else if (data) {
-          const isRoomPlayer =
-            profile.id === data.host_id || profile.id === data.guest_id;
+        } else if (
+          data &&
+          (profile.id === data.host_id || profile.id === data.guest_id)
+        ) {
+          setActiveRoom(data);
+          persistActiveRoomCode(data.code);
+          await hydrateGameFromInitialRoom(data);
+        } else if (initialRoomCode.source === 'url') {
+          const joinResult = await joinRoom({
+            code: initialRoomCode.code,
+          });
 
-          if (isRoomPlayer) {
-            setActiveRoom(data);
-            persistActiveRoomCode(data.code);
-            await hydrateGameFromInitialRoom(data);
-          } else if (
-            initialRoomCode.source === 'url' &&
-            data.status === 'waiting'
-          ) {
-            const joinResult = await joinRoom({
-              code: data.code,
-              guestId: profile.id,
-            });
-
-            if (joinResult.error) {
-              setRoomError(joinResult.error.message);
-            } else {
-              setActiveRoom(joinResult.data);
-              persistActiveRoomCode(joinResult.data.code);
-              await hydrateGameFromInitialRoom(joinResult.data);
-            }
+          if (joinResult.error) {
+            setRoomError(joinResult.error.message);
           } else {
-            setRoomError('This room is not available for your account.');
-            persistActiveRoomCode(null);
+            setActiveRoom(joinResult.data);
+            persistActiveRoomCode(joinResult.data.code);
+            await hydrateGameFromInitialRoom(joinResult.data);
           }
         } else {
           persistActiveRoomCode(null);

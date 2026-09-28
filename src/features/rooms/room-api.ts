@@ -8,7 +8,6 @@ type CreateRoomInput = {
 
 type JoinRoomInput = {
   code: string;
-  guestId: string;
 };
 
 type GetRoomByCodeInput = {
@@ -27,9 +26,7 @@ export async function createRoom({ hostId }: CreateRoomInput) {
   });
 }
 
-export async function joinRoom({ code, guestId }: JoinRoomInput) {
-  void guestId;
-
+export async function joinRoom({ code }: JoinRoomInput) {
   return apiRequest<Room>('/rooms/join', {
     body: JSON.stringify({ code: normalizeRoomCode(code) }),
     method: 'POST',
